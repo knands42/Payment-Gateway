@@ -1,0 +1,5 @@
+FROM golang:1.20rc2-alpine3.17 AS builder
+
+WORKDIR /go/src
+
+CMD [ "tail", "-f", "/dev/null" ]
