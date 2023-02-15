@@ -3,7 +3,11 @@ package entity
 import (
 	"errors"
 	"regexp"
+
+	NotificationPackage "github.com/caiofernandes00/payment-gateway/domain/notification"
 )
+
+var CONTEXT = "creditcard"
 
 type CreditCard struct {
 	Number          string
@@ -11,6 +15,7 @@ type CreditCard struct {
 	ExpirationMonth int
 	ExpirationYear  int
 	CVV             string
+	notification    NotificationPackage.Notification
 }
 
 func NewCreditCard(number, name string, expirationMonth, expirationYear int, cvv string) (*CreditCard, error) {
@@ -25,30 +30,24 @@ func NewCreditCard(number, name string, expirationMonth, expirationYear int, cvv
 	if err := cc.IsValid(); err != nil {
 		return nil, err
 	}
+
 	return cc, nil
 }
 
 func (cc *CreditCard) IsValid() error {
-	if !cc.validateCVV() {
-		return errors.New("invalid credit card cvv")
-	}
+	cc.validateNumber()
+	cc.validateExpirationMonth()
+	cc.validateExpirationYear()
+	cc.validateCVV()
 
-	if !cc.validateExpirationMonth() {
-		return errors.New("invalid credit card expiration month")
-	}
-
-	if !cc.validateExpirationYear() {
-		return errors.New("invalid credit card expiration year")
-	}
-
-	if err := cc.validateNumber(); err != nil {
-		return err
+	if cc.notification.HasErrors() {
+		return errors.New(cc.notification.Messages(CONTEXT))
 	}
 
 	return nil
 }
 
-func (cc *CreditCard) validateNumber() error {
+func (cc *CreditCard) validateNumber() {
 	visaRg := regexp.MustCompile(`^4[0-9]{12}(?:[0-9]{3})?$`)
 	masterRg := regexp.MustCompile(`^5[1-5][0-9]{14}$`)
 	amexRg := regexp.MustCompile(`^3[47][0-9]{13}$`)
@@ -62,20 +61,27 @@ func (cc *CreditCard) validateNumber() error {
 		!discoverRg.MatchString(cc.Number) &&
 		!dinersRg.MatchString(cc.Number) &&
 		!jcbRg.MatchString(cc.Number) {
-		return errors.New("invalid credit card number")
+		cc.notification.AddError("invalid credit card number", CONTEXT)
 	}
-
-	return nil
 }
 
-func (cc *CreditCard) validateExpirationMonth() bool {
-	return cc.ExpirationMonth >= 1 && cc.ExpirationMonth <= 12
+func (cc *CreditCard) validateExpirationMonth() {
+	isValid := cc.ExpirationMonth >= 1 && cc.ExpirationMonth <= 12
+	if !isValid {
+		cc.notification.AddError("invalid credit card expiration month", CONTEXT)
+	}
 }
 
-func (cc *CreditCard) validateExpirationYear() bool {
-	return cc.ExpirationYear >= 2020
+func (cc *CreditCard) validateExpirationYear() {
+	isValid := cc.ExpirationYear >= 2020
+	if !isValid {
+		cc.notification.AddError("invalid credit card expiration year", CONTEXT)
+	}
 }
 
-func (cc *CreditCard) validateCVV() bool {
-	return len(cc.CVV) == 3
+func (cc *CreditCard) validateCVV() {
+	isValid := len(cc.CVV) == 3
+	if !isValid {
+		cc.notification.AddError("invalid credit card cvv", CONTEXT)
+	}
 }
