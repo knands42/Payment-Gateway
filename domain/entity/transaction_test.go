@@ -6,27 +6,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_TransactionIdValidation(t *testing.T) {
-	// valid
-	_, err := NewTransaction("123", "123", 100)
-	assert.Nil(t, err)
-
-	// invalid
-	_, err = NewTransaction("", "123", 100)
-	assert.Equal(t, "invalid transaction id", err.Error())
+func Test_TransactionMultipleErrors(t *testing.T) {
+	_, err := NewTransaction("", "", 0)
+	assert.Equal(t, "transaction: the amount must be greater than 0", err.Error())
 }
 
-func Test_TrasactionAmountValidation(t *testing.T) {
+func Test_TrasactionAmount(t *testing.T) {
 	// valid
 	_, err := NewTransaction("123", "123", 100)
 	assert.Nil(t, err)
 
-	// invalid
+	// invalid single error
 	_, err = NewTransaction("123", "123", 0)
-	assert.Equal(t, "the amount must be greater than 0", err.Error())
+	assert.Equal(t, "transaction: the amount must be greater than 0", err.Error())
 
 	_, err = NewTransaction("123", "123", 1001)
-	assert.Equal(t, "limit exceeded", err.Error())
+	assert.Equal(t, "transaction: limit exceeded", err.Error())
 }
 
 func Test_SetCreditCard(t *testing.T) {

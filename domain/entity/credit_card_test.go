@@ -80,17 +80,7 @@ func Test_CreditCardCVV(t *testing.T) {
 	assert.Equal(t, "creditcard: invalid credit card cvv", err.Error())
 }
 
-func Test_CreditCard(t *testing.T) {
-	// Valid
-	cc, err := NewCreditCard("4111111111111111", "John Doe", 1, 2020, "123")
-	assert.Nil(t, err)
-	assert.Equal(t, "4111111111111111", cc.Number)
-	assert.Equal(t, "John Doe", cc.Name)
-	assert.Equal(t, 1, cc.ExpirationMonth)
-	assert.Equal(t, 2020, cc.ExpirationYear)
-	assert.Equal(t, "123", cc.CVV)
-
-	// Invalid multiple errors
-	_, err = NewCreditCard("4111111111111111", "John Doe", 13, 2019, "1234")
+func Test_CreditCardMultipleErrors(t *testing.T) {
+	_, err := NewCreditCard("4111111111111111", "John Doe", 13, 2019, "1234")
 	assert.Equal(t, "creditcard: invalid credit card expiration month,invalid credit card expiration year,invalid credit card cvv", err.Error())
 }

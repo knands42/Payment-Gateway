@@ -1,6 +1,12 @@
 package entity
 
-import "errors"
+import (
+	"errors"
+
+	NotificationPackage "github.com/caiofernandes00/payment-gateway/domain/notification"
+)
+
+var TRANSACTION_CONTEXT string = "transaction"
 
 type Transaction struct {
 	ID           string
@@ -9,6 +15,7 @@ type Transaction struct {
 	CreditCard   CreditCard
 	Status       string
 	ErrorMessage string
+	notification NotificationPackage.Notification
 }
 
 func NewTransaction(id, accountId string, amount float64) (*Transaction, error) {
@@ -26,12 +33,10 @@ func NewTransaction(id, accountId string, amount float64) (*Transaction, error) 
 }
 
 func (t *Transaction) IsValid() error {
-	if !t.validateID() {
-		return errors.New("invalid transaction id")
-	}
+	t.validateAmount()
 
-	if err := t.validateAmount(); err != nil {
-		return err
+	if t.notification.HasErrors() {
+		return errors.New(t.notification.Messages(TRANSACTION_CONTEXT))
 	}
 
 	return nil
@@ -41,18 +46,12 @@ func (t *Transaction) SetCreditCard(cc CreditCard) {
 	t.CreditCard = cc
 }
 
-func (t *Transaction) validateID() bool {
-	return t.ID != ""
-}
-
-func (t *Transaction) validateAmount() error {
-	if t.Amount < 1 {
-		return errors.New("the amount must be greater than 0")
+func (t *Transaction) validateAmount() {
+	if t.Amount <= 0 {
+		t.notification.AddError("the amount must be greater than 0", TRANSACTION_CONTEXT)
 	}
 
 	if t.Amount > 1000 {
-		return errors.New("limit exceeded")
+		t.notification.AddError("limit exceeded", TRANSACTION_CONTEXT)
 	}
-
-	return nil
 }

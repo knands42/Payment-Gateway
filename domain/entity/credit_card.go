@@ -7,7 +7,7 @@ import (
 	NotificationPackage "github.com/caiofernandes00/payment-gateway/domain/notification"
 )
 
-var CONTEXT = "creditcard"
+var CREDIT_CONTEXT = "creditcard"
 
 type CreditCard struct {
 	Number          string
@@ -41,7 +41,7 @@ func (cc *CreditCard) IsValid() error {
 	cc.validateCVV()
 
 	if cc.notification.HasErrors() {
-		return errors.New(cc.notification.Messages(CONTEXT))
+		return errors.New(cc.notification.Messages(CREDIT_CONTEXT))
 	}
 
 	return nil
@@ -61,27 +61,27 @@ func (cc *CreditCard) validateNumber() {
 		!discoverRg.MatchString(cc.Number) &&
 		!dinersRg.MatchString(cc.Number) &&
 		!jcbRg.MatchString(cc.Number) {
-		cc.notification.AddError("invalid credit card number", CONTEXT)
+		cc.notification.AddError("invalid credit card number", CREDIT_CONTEXT)
 	}
 }
 
 func (cc *CreditCard) validateExpirationMonth() {
 	isValid := cc.ExpirationMonth >= 1 && cc.ExpirationMonth <= 12
 	if !isValid {
-		cc.notification.AddError("invalid credit card expiration month", CONTEXT)
+		cc.notification.AddError("invalid credit card expiration month", CREDIT_CONTEXT)
 	}
 }
 
 func (cc *CreditCard) validateExpirationYear() {
 	isValid := cc.ExpirationYear >= 2020
 	if !isValid {
-		cc.notification.AddError("invalid credit card expiration year", CONTEXT)
+		cc.notification.AddError("invalid credit card expiration year", CREDIT_CONTEXT)
 	}
 }
 
 func (cc *CreditCard) validateCVV() {
 	isValid := len(cc.CVV) == 3
 	if !isValid {
-		cc.notification.AddError("invalid credit card cvv", CONTEXT)
+		cc.notification.AddError("invalid credit card cvv", CREDIT_CONTEXT)
 	}
 }
