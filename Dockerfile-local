@@ -1,5 +1,7 @@
 FROM golang:1.20rc2-alpine3.17 AS builder
 
 WORKDIR /go/src
+# RUN apt-get update && apt-get install build-essential librdkafka-dev -y
+RUN apk update && apk add build-base librdkafka-dev
 
 CMD [ "tail", "-f", "/dev/null" ]

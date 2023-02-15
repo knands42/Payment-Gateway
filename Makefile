@@ -2,6 +2,10 @@
 
 include app.env
 
+############################### DOCKER ###############################
+docker_up:
+	docker-compose up --build 
+	
 ############################### MIGRATE ###############################
 migration_fixture_create:
 	migrate create -ext sql -dir adapter/repository/fixture/migration -seq $(NAME)

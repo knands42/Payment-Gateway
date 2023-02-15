@@ -6,11 +6,16 @@ services:
       context: .
       dockerfile: Dockerfile-local
     container_name: Payment-Gateway-app
+    depends_on:
+      kafka:
+        condition: service_started
+      postgres:
+        condition: service_started
     volumes:
       - .:/go/src
-    networks:
-      - Payment-Gateway-network      
-
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+  
   postgres:
     image: postgres:14.3-alpine
     container_name: Payment-Gateway-postgres
@@ -20,9 +25,30 @@ services:
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=transactions
-    networks:
-      - Payment-Gateway-network
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
 
-networks:
-  Payment-Gateway-network:
-    driver: bridge
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: Payment-Gateway-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: Payment-Gateway-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9094:9094
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: Payment-Gateway-zookeeper:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LISTENERS: INTERNAL://:9092,OUTSIDE://:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://Payment-Gateway-kafka:9092,OUTSIDE://host.docker.internal:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
