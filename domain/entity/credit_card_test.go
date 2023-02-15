@@ -71,12 +71,15 @@ func Test_CreditCardExpirationYear(t *testing.T) {
 
 func Test_CreditCardCVV(t *testing.T) {
 	// Valid
-	visa, err := NewCreditCard("4111111111111111", "John Doe", 1, 2020, "123")
+	cc, err := NewCreditCard("4111111111111111", "John Doe", 1, 2020, "333")
 	assert.Nil(t, err)
-	assert.Equal(t, "123", visa.CVV)
+	assert.Equal(t, "333", cc.CVV)
+	cc, err = NewCreditCard("4111111111111111", "John Doe", 1, 2020, "4444")
+	assert.Nil(t, err)
+	assert.Equal(t, "4444", cc.CVV)
 
 	// Invalid single error
-	_, err = NewCreditCard("4111111111111111", "John Doe", 1, 2020, "1234")
+	_, err = NewCreditCard("4111111111111111", "John Doe", 1, 2020, "55555")
 	assert.Equal(t, "creditcard: invalid credit card cvv", err.Error())
 }
 

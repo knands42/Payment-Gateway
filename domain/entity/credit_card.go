@@ -7,7 +7,12 @@ import (
 	NotificationPackage "github.com/caiofernandes00/payment-gateway/domain/notification"
 )
 
-var CREDIT_CONTEXT = "creditcard"
+const (
+	CREDIT_CONTEXT = "creditcard"
+
+	STATUS_APPROVED = "approved"
+	STATUS_REJECTED = "rejected"
+)
 
 type CreditCard struct {
 	Number          string
@@ -80,7 +85,7 @@ func (cc *CreditCard) validateExpirationYear() {
 }
 
 func (cc *CreditCard) validateCVV() {
-	isValid := len(cc.CVV) == 3
+	isValid := len(cc.CVV) == 3 || len(cc.CVV) == 4
 	if !isValid {
 		cc.notification.AddError("invalid credit card cvv", CREDIT_CONTEXT)
 	}

@@ -5,8 +5,8 @@ type TransactionDTOInput struct {
 	AccountId                 string  `json:"account_id"`
 	CreditCardNumber          string  `json:"credit_card_number"`
 	CreditCardName            string  `json:"credit_card_name"`
-	CreditCardExpirationMonth string  `json:"credit_card_expiration_month"`
-	CreditCardExpirationYear  string  `json:"credit_card_expiration_year"`
+	CreditCardExpirationMonth int     `json:"credit_card_expiration_month"`
+	CreditCardExpirationYear  int     `json:"credit_card_expiration_year"`
 	CreditCardCVV             string  `json:"credit_card_cvv"`
 	Amount                    float64 `json:"amount"`
 }
