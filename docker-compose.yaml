@@ -5,5 +5,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-local
+    container_name: Payment-Gateway-app
     volumes:
       - .:/go/src
+    networks:
+      - Payment-Gateway-network      
+
+  postgres:
+    image: postgres:14.3-alpine
+    container_name: Payment-Gateway-postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=transactions
+    networks:
+      - Payment-Gateway-network
+
+networks:
+  Payment-Gateway-network:
+    driver: bridge

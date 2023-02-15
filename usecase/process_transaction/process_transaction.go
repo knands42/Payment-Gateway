@@ -29,7 +29,7 @@ func (p *ProcessTransaction) Execute(input TransactionDTOInput) (TransactionDTOO
 }
 
 func (p *ProcessTransaction) handleRejectedTransaction(input TransactionDTOInput, errorMessage string) (TransactionDTOOutput, error) {
-	err := p.transactionRepository.Insert(input.ID, input.AccountId, input.Amount, entity.STATUS_REJECTED, errorMessage)
+	err := p.transactionRepository.Insert(input.ID, input.AccountId, entity.STATUS_REJECTED, errorMessage, input.Amount)
 	if err != nil {
 		return TransactionDTOOutput{}, err
 	}
@@ -42,7 +42,7 @@ func (p *ProcessTransaction) handleRejectedTransaction(input TransactionDTOInput
 }
 
 func (p *ProcessTransaction) handleApprovedTransaction(input TransactionDTOInput) (TransactionDTOOutput, error) {
-	err := p.transactionRepository.Insert(input.ID, input.AccountId, input.Amount, entity.STATUS_APPROVED, "")
+	err := p.transactionRepository.Insert(input.ID, input.AccountId, entity.STATUS_APPROVED, "", input.Amount)
 	if err != nil {
 		return TransactionDTOOutput{}, err
 	}
