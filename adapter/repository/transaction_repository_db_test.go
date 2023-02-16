@@ -4,16 +4,15 @@ import (
 	"os"
 	"testing"
 
-	"github.com/caiofernandes00/payment-gateway/adapter/repository/fixture"
 	"github.com/stretchr/testify/assert"
 )
 
-var migrationDir = os.DirFS("fixture/migration")
+var migrationDir = os.DirFS("migration")
 
 func Test_DbInsert(t *testing.T) {
 	// Arrange
-	db := fixture.Up(migrationDir)
-	defer fixture.Down(db, migrationDir)
+	db := Up(migrationDir)
+	defer Down(db, migrationDir)
 	repo := NewTransactionRepositoryDb(db)
 
 	// Act

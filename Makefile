@@ -1,17 +1,15 @@
 .PHONY: migration_fixture_create migration_fixture_up mockgen
 
-include app.env
-
 ############################### DOCKER ###############################
 docker_up:
 	docker-compose up --build 
 	
 ############################### MIGRATE ###############################
-migration_fixture_create:
-	migrate create -ext sql -dir adapter/repository/fixture/migration -seq $(NAME)
+migration_create:
+	migrate create -ext sql -dir adapter/repository/migration -seq $(NAME)
 
-migration_fixture_up:
-	migrate -path adapter/repository/fixture/migration -database "$(DB_SOURCE)" -verbose up
+migration_up:
+	migrate -path adapter/repository/migration -database "sqlite3://transaction.db" up
 
 ############################### MOCKGEN ###############################
 REPOSITORY_PATH = domain/repository/*.go
@@ -26,3 +24,10 @@ mockgen:
 	@for file in $(ADAPTER_BROKER_PATH); do \
 		mockgen -source=$$file -destination=$(ADAPTER_BROKER_PATH_MOCKGEN)/`basename $$file` ; \
 	done
+
+############################### APP ###############################
+app_run:
+	go run cmd/main.go
+
+app_build:
+	go build -o main cmd/main.go

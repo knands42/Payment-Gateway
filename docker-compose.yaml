@@ -6,25 +6,22 @@ services:
       context: .
       dockerfile: Dockerfile-local
     container_name: Payment-Gateway-app
+    environment:
+      - BOOTSTRAP_SERVERS=Payment-Gateway-kafka:9092
     depends_on:
       kafka:
-        condition: service_started
-      postgres:
         condition: service_started
     volumes:
       - .:/go/src
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
   
-  postgres:
-    image: postgres:14.3-alpine
-    container_name: Payment-Gateway-postgres
-    ports:
-      - '5432:5432'
-    environment:
-      - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=transactions
+  sqlite:
+    image: arm32v7/sqlite
+    container_name: Payment-Gateway-sqlite
+    volumes:
+      - .docker/db:/db
+    command: sqlite3/db/transaction.db
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
 
