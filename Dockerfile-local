@@ -1,8 +1,7 @@
-FROM golang:1.20rc2-alpine3.17 AS builder
+FROM golang:1.20 AS builder
 
 WORKDIR /go/src
-RUN apk update && apk add build-base librdkafka-dev make
-
+RUN apt-get update && apt-get install build-essential librdkafka-dev -y
 COPY . .
 
 CMD ["make", "app_run"]

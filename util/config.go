@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -28,13 +29,17 @@ func NewConfig() *Config {
 	}
 }
 
-func (c *Config) LoadEnv() (config Config, err error) {
+func (c *Config) LoadEnv() {
 	viper.AutomaticEnv()
 
-	err = viper.Unmarshal(&config)
+	err := viper.Unmarshal(&c)
+
+	v := os.Getenv("KAFKA_BOOTSTRAP_SERVERS")
+	if v != "" {
+		c.KafkaBootstrapServers = v
+	}
+
 	if err != nil {
 		fmt.Printf("Error unmarshalling config, %s", err)
 	}
-
-	return
 }

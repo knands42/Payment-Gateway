@@ -1,14 +1,14 @@
 .PHONY: docker_up_app docker_up_deps docker_down migration_create migration_up mockgen app_run app_build kafka_publish
 
 ############################### DOCKER ###############################
-docker_up_app:
+docker_down:
+	docker-compose down
+
+docker_up_app: docker_down
 	docker-compose up --build  --force-recreate
 
 docker_up_deps:
 	docker-compose up --build kafka
-
-docker_down:
-	docker-compose down
 	
 ############################### MIGRATE ###############################
 migration_create:
@@ -40,5 +40,4 @@ app_build:
 
 ############################### KAFKA ###############################
 kafka_publish:
-	kafkacat -b localhost:9092 -t transactions -P -l ./fixtures/success-transaction.json
-
+	docker exec -i Payment-Gateway-kafka kafka-console-producer --broker-list localhost:9092 --topic transactions < ./fixtures/success-transaction.json
