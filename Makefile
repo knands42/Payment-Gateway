@@ -1,8 +1,14 @@
 .PHONY: migration_fixture_create migration_fixture_up mockgen
 
 ############################### DOCKER ###############################
-docker_up:
+docker_up_app:
 	docker-compose up --build 
+
+docker_up_deps:
+	docker-compose up -d --build kafka
+
+docker_down:
+	docker-compose down
 	
 ############################### MIGRATE ###############################
 migration_create:

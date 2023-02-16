@@ -16,15 +16,6 @@ services:
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
   
-  sqlite:
-    image: arm32v7/sqlite
-    container_name: Payment-Gateway-sqlite
-    volumes:
-      - .docker/db:/db
-    command: sqlite3/db/transaction.db
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
-
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: Payment-Gateway-zookeeper
