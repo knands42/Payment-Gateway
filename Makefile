@@ -5,7 +5,7 @@ docker_up_app:
 	docker-compose up --build 
 
 docker_up_deps:
-	docker-compose up -d --build kafka
+	docker-compose up --build kafka
 
 docker_down:
 	docker-compose down

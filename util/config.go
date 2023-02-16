@@ -32,6 +32,9 @@ func (c *Config) LoadEnv() (config Config, err error) {
 	viper.AutomaticEnv()
 
 	err = viper.Unmarshal(&config)
-	fmt.Printf("Error unmarshalling config, %s", err)
+	if err != nil {
+		fmt.Printf("Error unmarshalling config, %s", err)
+	}
+
 	return
 }
