@@ -1,8 +1,8 @@
-.PHONY: migration_fixture_create migration_fixture_up mockgen
+.PHONY: docker_up_app docker_up_deps docker_down migration_create migration_up mockgen app_run app_build kafka_publish
 
 ############################### DOCKER ###############################
 docker_up_app:
-	docker-compose up --build 
+	docker-compose up --build  --force-recreate
 
 docker_up_deps:
 	docker-compose up --build kafka
@@ -37,3 +37,8 @@ app_run:
 
 app_build:
 	go build -o main cmd/main.go
+
+############################### KAFKA ###############################
+kafka_publish:
+	kafkacat -b localhost:9092 -t transactions -P -l ./fixtures/success-transaction.json
+

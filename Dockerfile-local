@@ -1,6 +1,8 @@
 FROM golang:1.20rc2-alpine3.17 AS builder
 
 WORKDIR /go/src
-RUN apk update && apk add build-base librdkafka-dev
+RUN apk update && apk add build-base librdkafka-dev make
 
-CMD [ "tail", "-f", "/dev/null" ]
+COPY . .
+
+CMD ["make", "app_run"]

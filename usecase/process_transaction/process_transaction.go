@@ -1,6 +1,8 @@
 package process_transaction
 
 import (
+	"log"
+
 	"github.com/caiofernandes00/payment-gateway/adapter/broker"
 	"github.com/caiofernandes00/payment-gateway/domain/entity"
 	"github.com/caiofernandes00/payment-gateway/domain/repository"
@@ -21,6 +23,7 @@ func NewProcessTransaction(transactionRepository repository.TransactionRepositor
 }
 
 func (p *ProcessTransaction) Execute(input TransactionDTOInput) (TransactionDTOOutput, error) {
+	log.Printf("Processing transaction %s", input.ID)
 	transaction, err := entity.NewTransaction(input.ID, input.AccountId, input.Amount)
 	if err != nil {
 		return p.handleRejectedTransaction(input, err.Error())
@@ -32,6 +35,7 @@ func (p *ProcessTransaction) Execute(input TransactionDTOInput) (TransactionDTOO
 
 	transaction.SetCreditCard(*cc)
 
+	log.Printf("Transaction %s is valid", input.ID)
 	return p.handleApprovedTransaction(input)
 }
 

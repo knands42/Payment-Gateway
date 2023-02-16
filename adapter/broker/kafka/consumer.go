@@ -1,6 +1,10 @@
 package kafka
 
-import ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
+import (
+	"log"
+
+	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
+)
 
 type Consumer struct {
 	ConfigMap *ckafka.ConfigMap
@@ -27,7 +31,9 @@ func (c *Consumer) Consume(msgChan chan *ckafka.Message) error {
 	}
 
 	for {
+		log.Println("Waiting for messages...")
 		msg, err := consumer.ReadMessage(-1)
+		log.Println("Message received" + string(msg.Value))
 		if err == nil {
 			msgChan <- msg
 		}
