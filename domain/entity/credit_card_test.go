@@ -84,6 +84,6 @@ func Test_CreditCardCVV(t *testing.T) {
 }
 
 func Test_CreditCardMultipleErrors(t *testing.T) {
-	_, err := NewCreditCard("4111111111111111", "John Doe", 13, 2019, "1234")
+	_, err := NewCreditCard("4111111111111111", "John Doe", 13, 2019, "55555")
 	assert.Equal(t, "creditcard: invalid credit card expiration month,invalid credit card expiration year,invalid credit card cvv", err.Error())
 }

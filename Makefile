@@ -16,8 +16,13 @@ migration_fixture_up:
 ############################### MOCKGEN ###############################
 REPOSITORY_PATH = domain/repository/*.go
 REPOSITORY_PATH_MOCKGEN = domain/repository/mock
+ADAPTER_BROKER_PATH = adapter/broker/*.go
+ADAPTER_BROKER_PATH_MOCKGEN = adapter/broker/mock
 
 mockgen:
 	@for file in $(REPOSITORY_PATH); do \
 		mockgen -source=$$file -destination=$(REPOSITORY_PATH_MOCKGEN)/`basename $$file` ; \
+	done
+	@for file in $(ADAPTER_BROKER_PATH); do \
+		mockgen -source=$$file -destination=$(ADAPTER_BROKER_PATH_MOCKGEN)/`basename $$file` ; \
 	done

@@ -1,16 +1,23 @@
 package process_transaction
 
 import (
+	"github.com/caiofernandes00/payment-gateway/adapter/broker"
 	"github.com/caiofernandes00/payment-gateway/domain/entity"
 	"github.com/caiofernandes00/payment-gateway/domain/repository"
 )
 
 type ProcessTransaction struct {
 	transactionRepository repository.TransactionRepository
+	Producer              broker.ProducerInterface
+	Topic                 string
 }
 
-func NewProcessTransaction(transactionRepository repository.TransactionRepository) *ProcessTransaction {
-	return &ProcessTransaction{transactionRepository: transactionRepository}
+func NewProcessTransaction(transactionRepository repository.TransactionRepository, producer broker.ProducerInterface, topic string) *ProcessTransaction {
+	return &ProcessTransaction{
+		transactionRepository: transactionRepository,
+		Producer:              producer,
+		Topic:                 topic,
+	}
 }
 
 func (p *ProcessTransaction) Execute(input TransactionDTOInput) (TransactionDTOOutput, error) {
@@ -34,11 +41,18 @@ func (p *ProcessTransaction) handleRejectedTransaction(input TransactionDTOInput
 		return TransactionDTOOutput{}, err
 	}
 
-	return TransactionDTOOutput{
+	output := TransactionDTOOutput{
 		ID:           input.ID,
 		Status:       entity.STATUS_REJECTED,
 		ErrorMessage: errorMessage,
-	}, nil
+	}
+
+	err = p.publish(output, []byte(input.ID))
+	if err != nil {
+		return TransactionDTOOutput{}, err
+	}
+
+	return output, nil
 }
 
 func (p *ProcessTransaction) handleApprovedTransaction(input TransactionDTOInput) (TransactionDTOOutput, error) {
@@ -47,9 +61,20 @@ func (p *ProcessTransaction) handleApprovedTransaction(input TransactionDTOInput
 		return TransactionDTOOutput{}, err
 	}
 
-	return TransactionDTOOutput{
+	output := TransactionDTOOutput{
 		ID:           input.ID,
 		Status:       entity.STATUS_APPROVED,
 		ErrorMessage: "",
-	}, nil
+	}
+
+	err = p.publish(output, []byte(input.ID))
+	if err != nil {
+		return TransactionDTOOutput{}, err
+	}
+
+	return output, nil
+}
+
+func (p *ProcessTransaction) publish(output TransactionDTOOutput, key []byte) error {
+	return p.Producer.Publish(output, key, p.Topic)
 }

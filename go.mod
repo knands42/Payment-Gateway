@@ -5,6 +5,7 @@ go 1.20
 require github.com/stretchr/testify v1.8.1
 
 require (
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/maragudk/migrate v0.4.3 // indirect

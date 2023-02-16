@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	mock_broker "github.com/caiofernandes00/payment-gateway/adapter/broker/mock"
 	"github.com/caiofernandes00/payment-gateway/domain/entity"
 	mock_repository "github.com/caiofernandes00/payment-gateway/domain/repository/mock"
 	"github.com/golang/mock/gomock"
@@ -33,11 +34,17 @@ func Test_ProcessTransaction_ExecuteApprovedTransaction(t *testing.T) {
 	defer ctrl.Finish()
 
 	repositoryMock := mock_repository.NewMockTransactionRepository(ctrl)
+	presenterMock := mock_broker.NewMockProducerInterface(ctrl)
+	topic := "topic"
 	repositoryMock.EXPECT().
-		Insert(input.ID, input.AccountId, input.Amount, expectedOutput.Status, expectedOutput.ErrorMessage).
+		Insert(input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock)
+	presenterMock.EXPECT().
+		Publish(expectedOutput, []byte(input.ID), topic).
+		Return(nil)
+
+	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic)
 	output, err := usecase.Execute(input)
 
 	// Assert
@@ -68,11 +75,17 @@ func Test_ProcessTransaction_ExecuteInvalidCreditCard(t *testing.T) {
 	defer ctrl.Finish()
 
 	repositoryMock := mock_repository.NewMockTransactionRepository(ctrl)
+	presenterMock := mock_broker.NewMockProducerInterface(ctrl)
+	topic := "topic"
 	repositoryMock.EXPECT().
-		Insert(input.ID, input.AccountId, input.Amount, expectedOutput.Status, expectedOutput.ErrorMessage).
+		Insert(input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
+		Return(nil)
+	presenterMock.EXPECT().
+		Publish(expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock)
+	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic)
+
 	output, err := usecase.Execute(input)
 
 	// Assert
@@ -103,11 +116,16 @@ func Test_ProcessTransaction_ExecuteRejectedCreditCard(t *testing.T) {
 	defer ctrl.Finish()
 
 	repositoryMock := mock_repository.NewMockTransactionRepository(ctrl)
+	presenterMock := mock_broker.NewMockProducerInterface(ctrl)
+	topic := "topic"
 	repositoryMock.EXPECT().
-		Insert(input.ID, input.AccountId, input.Amount, expectedOutput.Status, expectedOutput.ErrorMessage).
+		Insert(input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
+		Return(nil)
+	presenterMock.EXPECT().
+		Publish(expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock)
+	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic)
 	output, err := usecase.Execute(input)
 
 	// Assert
