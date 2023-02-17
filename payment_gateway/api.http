@@ -1,0 +1,57 @@
+######################## Order Module ########################
+###
+GET http://localhost:3000/orders
+
+###
+GET http://localhost:3000/orders/21fd40c6-6f3a-4786-81d3-f727f7c7ed9f
+
+###
+POST http://localhost:3000/orders
+Content-Type: application/json
+
+{
+    "amount": 30.00,
+    "credit_card_number": "111",
+    "credit_card_name": "John Doe"
+}
+
+###
+PATCH http://localhost:3000/orders/21fd40c6-6f3a-4786-81d3-f727f7c7ed9f
+Content-Type: application/json
+
+{
+    "amount": 50.00,
+    "credit_card_number": "222",
+    "credit_card_name": "John Doe"
+}
+
+###
+DELETE http://localhost:3000/orders/21fd40c6-6f3a-4786-81d3-f727f7c7ed9f
+
+
+######################## Account Module ########################
+
+###
+GET http://localhost:3000/accounts
+
+###
+GET http://localhost:3000/accounts/21fd40c6-6f3a-4786-81d3-f727f7c7ed9f
+
+###
+POST http://localhost:3000/accounts
+Content-Type: application/json
+
+{
+    "name": "John Doe account"
+}
+
+###
+PATCH http://localhost:3000/accounts/1d0f7048-5682-4270-9529-a3f904eb8b04
+Content-Type: application/json
+
+{
+    "name": "Mary Joe account"
+}
+
+###
+DELETE http://localhost:3000/accounts/1d0f7048-5682-4270-9529-a3f904eb8b04
