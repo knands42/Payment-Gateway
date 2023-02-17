@@ -19,14 +19,18 @@ func NewKafkaConsumer(configMap *ckafka.ConfigMap, topics []string) *Consumer {
 }
 
 func (c *Consumer) Consume(msgChan chan *ckafka.Message) error {
+	log.Println("Starting consumer...")
 	consumer, err := ckafka.NewConsumer(c.ConfigMap)
 	if err != nil {
+		log.Println("Failed to create consumer: " + err.Error())
 		return err
 	}
 
 	// TODO: Add rebalance callback
+	log.Println("Starting to consume messages...")
 	err = consumer.SubscribeTopics(c.Topics, nil)
 	if err != nil {
+		log.Println("Failed to subscribe to topic: " + err.Error())
 		return err
 	}
 

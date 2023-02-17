@@ -35,7 +35,6 @@ func (p *ProcessTransaction) Execute(input TransactionDTOInput) (TransactionDTOO
 
 	transaction.SetCreditCard(*cc)
 
-	log.Printf("Transaction %s is valid", input.ID)
 	return p.handleApprovedTransaction(input)
 }
 
@@ -56,6 +55,8 @@ func (p *ProcessTransaction) handleRejectedTransaction(input TransactionDTOInput
 		return TransactionDTOOutput{}, err
 	}
 
+	log.Printf("Transaction %s is invalid with error: %s", input.ID, err.Error())
+	log.Printf("Failed Transaction %s:", err.Error())
 	return output, nil
 }
 
@@ -76,6 +77,7 @@ func (p *ProcessTransaction) handleApprovedTransaction(input TransactionDTOInput
 		return TransactionDTOOutput{}, err
 	}
 
+	log.Printf("Approved Transaction %s with output value: %s", input.ID, output)
 	return output, nil
 }
 
