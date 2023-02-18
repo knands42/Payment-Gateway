@@ -37,3 +37,6 @@ coverage
 # Databases
 *.db
 dbdata
+
+# Others
+.TODO
