@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+    depends_on: 
+      mysql:
+        condition: service_started
+    networks:
+      - Payment-Gateway-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mysql:
+    build: ./.docker/mysql
+    restart: always
+    tty: true
+    volumes:
+      - ./.docker/dbdata:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=orders
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - Payment-Gateway-network
+
+networks:
+  Payment-Gateway-network:
+    driver: bridge

@@ -5,7 +5,7 @@ docker_down:
 	docker-compose down
 
 docker_up_app: docker_down
-	docker-compose up --build  --force-recreate
+	docker-compose up --build --force-recreate
 
 docker_up_deps:
 	docker-compose up --build kafka
