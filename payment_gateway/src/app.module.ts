@@ -16,7 +16,7 @@ import { Account } from './accounts/entities/account.entity';
       host: join(__dirname, '..', 'orders.db'),
       autoLoadModels: true,
       models: [Order, Account],
-      sync: { alter: true, force: true },
+      sync: { alter: true },
     }),
     AccountsModule,
   ],
