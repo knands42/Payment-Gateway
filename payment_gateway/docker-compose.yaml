@@ -3,15 +3,23 @@ version: '3'
 services:
   app:
     build: .
+    container_name: Payment-Gateway-app
     ports:
       - 3000:3000
     volumes:
       - .:/home/node/app
     depends_on: 
-      mysql:
+      postgres:
         condition: service_started
     networks:
       - Payment-Gateway-network
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=orders
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 1m30s
@@ -19,15 +27,17 @@ services:
       retries: 3
       start_period: 40s
 
-  mysql:
-    build: ./.docker/mysql
-    restart: always
-    tty: true
+  postgres:
+    image: postgres:14.7-alpine
+    container_name: Payment-Gateway-postgres
+    ports:
+      - 5432:5432
     volumes:
-      - ./.docker/dbdata:/var/lib/mysql
+      - ./.docker/dbdata:/var/lib/postgresql/data
     environment:
-      - MYSQL_DATABASE=orders
-      - MYSQL_ROOT_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=orders
     networks:
       - Payment-Gateway-network
 
