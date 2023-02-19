@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { OrdersModule } from './orders/orders.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { ConfigModule } from '@nestjs/config';
-import { sequelizeModuleOptions } from './config/sequelize.config';
+import sequelizeModuleOptions from './config/database/sequelize.config';
 
 @Module({
   imports: [
