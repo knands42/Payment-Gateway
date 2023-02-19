@@ -3,15 +3,17 @@ import { join } from 'path';
 import { Account } from 'src/accounts/entities/account.entity';
 import { Order } from 'src/orders/entities/order.entity';
 
-const sequelizeModuleOptionsAllEnvironments = {
+type Environments = 'test' | 'local' | 'default';
+
+const sequelizeModuleOptions = {
   test: {
     dialect: 'sqlite',
     host: join(__dirname, '..', 'orders.db'),
     autoLoadModels: true,
     models: [Order, Account],
     sync: { alter: true },
-  } as SequelizeModuleOptions,
-  default: {
+  },
+  local: {
     dialect: 'postgres',
     host: process.env.DB_HOST ?? 'localhost',
     port: parseInt(process.env.DB_PORT) ?? 5432,
@@ -21,9 +23,21 @@ const sequelizeModuleOptionsAllEnvironments = {
     autoLoadModels: false,
     models: [Order, Account],
     sync: { alter: false, force: false },
-  } as SequelizeModuleOptions,
-};
+  },
+  default: {
+    dialect: 'postgres',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    autoLoadModels: false,
+    models: [Order, Account],
+    sync: { alter: false, force: false },
+  },
+} as { [key in Environments]: SequelizeModuleOptions };
 
-export default sequelizeModuleOptionsAllEnvironments[
-  process.env.NODE_ENV ?? 'default'
-];
+// Named exports used by the Sequelize CLI
+export const { test, local, default: production } = sequelizeModuleOptions;
+// Default export used by the NestJS app
+export default sequelizeModuleOptions;

@@ -1,16 +1,16 @@
 .PHONY: docker_down docker_up_app docker_up_deps app_run app_build
 
-NODE_ENV ?= default
+NODE_ENV ?= local
 
 ############################### Docker ###############################
 docker_down:
 	docker-compose down
 
-docker_up_app: docker_down
+docker_up_app: docker_down app_build
 	docker-compose up --build --force-recreate
 
 docker_up_deps:
-	docker-compose up --build mysql
+	docker-compose up --build postgres
 	
 ############################### Migration ###############################
 migration_create:
@@ -27,13 +27,13 @@ migration_down_all:
 
 ############################### Seeder ###############################
 seeder_create:
-	npx sequelize-cli seed:generate --name $(NAME) --config ./dist/config/database/sequelize.config.js --seeders-path ./src/config/database/seeders --env $(NODE_ENV)
+	npx sequelize-cli seed:generate --name $(NAME) --config ./dist/config/database/sequelize.config.js --seeders-path ./src/config/database/seeders --env local
 
 seeder_up:
-	npx sequelize-cli db:seed:all --config ./dist/config/database/sequelize.config.js --seeders-path ./src/config/database/seeders --env $(NODE_ENV)
+	npx sequelize-cli db:seed:all --config ./dist/config/database/sequelize.config.js --seeders-path ./src/config/database/seeders --env local
 
 seeder_down:
-	npx sequelize-cli db:seed:undo:all --config ./dist/config/database/sequelize.config.js --seeders-path ./src/config/database/seeders --env $(NODE_ENV)
+	npx sequelize-cli db:seed:undo:all --config ./dist/config/database/sequelize.config.js --seeders-path ./src/config/database/seeders --env local
 
 ############################### App ###############################
 app_run:
