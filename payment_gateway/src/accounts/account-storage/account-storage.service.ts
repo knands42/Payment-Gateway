@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Scope, Logger } from '@nestjs/common';
 import { AccountsService } from '../accounts.service';
 import { Account } from '../entities/account.entity';
 
@@ -13,7 +13,7 @@ export class AccountStorageService {
   }
 
   async seyBy(token: string): Promise<void> {
-    console.log('AccountStorageService.seyBy()');
+    Logger.log('AccountStorageService.seyBy()');
     this._account = await this.accountsService.findOne(token);
   }
 }

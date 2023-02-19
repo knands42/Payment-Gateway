@@ -16,16 +16,17 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - DB_HOST=Payment-Gateway-postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=orders
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 1m30s
-      timeout: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 5s
       retries: 3
-      start_period: 40s
+      start_period: 50s
 
   postgres:
     image: postgres:14.7-alpine

@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { AccountStorageService } from '../account-storage/account-storage.service';
 
 @Injectable()
@@ -8,7 +13,7 @@ export class TokenGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = request.headers?.['x-token'] as string;
-    console.log('TokenGuard.canActivate()');
+    Logger.log('TokenGuard.canActivate()');
     if (token) {
       try {
         await this.accountStorage.seyBy(token);
