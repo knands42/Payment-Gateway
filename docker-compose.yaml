@@ -25,6 +25,8 @@ services:
       KAFKA_LISTENERS: INTERNAL://:9092,OUTSIDE://:9094
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://payment_base_kafka:9092,OUTSIDE://payment_base_kafka:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+    volumes:
+      - ./fixtures/:/home/appuser/
     networks:
       - payment_gateway_network
       

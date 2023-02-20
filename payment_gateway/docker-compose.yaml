@@ -5,7 +5,7 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile.local
-    container_name: payment_Gateway_app
+    container_name: payment_gateway_app
     ports:
       - 3000:3000
     volumes:
@@ -16,7 +16,7 @@ services:
     environment:
       - NODE_ENV=local
       - PORT=3000
-      - DB_HOST=payment_Gateway_postgres
+      - DB_HOST=payment_gateway_postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
@@ -30,7 +30,7 @@ services:
 
   postgres:
     image: postgres:14.7-alpine
-    container_name: payment_Gateway_postgres
+    container_name: payment_gateway_postgres
     ports:
       - 5432:5432
     volumes:

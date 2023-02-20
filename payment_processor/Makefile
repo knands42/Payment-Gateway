@@ -37,7 +37,3 @@ app_run:
 
 app_build:
 	go build -o main cmd/main.go
-
-############################### KAFKA ###############################
-kafka_publish:
-	docker exec -i Payment-Gateway-kafka kafka-console-producer --broker-list localhost:9092 --topic transactions < ./fixtures/success-transaction.json
