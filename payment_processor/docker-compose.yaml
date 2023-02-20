@@ -7,9 +7,11 @@ services:
       dockerfile: Dockerfile.local
     container_name: payment_processor_app
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=payment_Gateway_kafka:9094
+      - KAFKA_BOOTSTRAP_SERVERS=payment_base_kafka:9094
     volumes:
       - .:/go/src
+    networks:
+      - payment_gateway_network
 
 
 networks:

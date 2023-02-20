@@ -21,7 +21,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=orders
-      - KAFKA_HOST=payment_Gateway_kafka:9094
+      - KAFKA_HOST=payment_base_kafka:9094
       - KAFKA_CLIENT_ID=payment_gateway
       - KAFKA_USE_SSL=false
       - KAFKA_CONSUMER_GROUP_ID=payment_gateway
