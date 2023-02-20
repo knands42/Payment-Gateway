@@ -23,7 +23,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: payment_base_zookeeper:2181
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_LISTENERS: INTERNAL://:9092,OUTSIDE://:9094
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://payment_base_kafka:9092,OUTSIDE://payment_base_kafka:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://payment_base_kafka:9092,OUTSIDE://host.docker.internal:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
     volumes:
       - ./fixtures/:/home/appuser/

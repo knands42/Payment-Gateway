@@ -6,7 +6,7 @@ export const kafkaMicroserviceConfig = {
   options: {
     client: {
       clientId: process.env.KAFKA_CLIENT_ID ?? 'payment_gateway',
-      brokers: [process.env.KAFKA_HOST ?? 'payment_base_kafka:9094'],
+      brokers: [process.env.KAFKA_HOST ?? 'localhost:9094'],
       ssl: process.env.KAFKA_USE_SSL === 'true',
     },
     consumer: {

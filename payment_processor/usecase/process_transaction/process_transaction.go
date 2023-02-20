@@ -41,6 +41,7 @@ func (p *ProcessTransaction) Execute(input TransactionDTOInput) (TransactionDTOO
 func (p *ProcessTransaction) handleRejectedTransaction(input TransactionDTOInput, errorMessage string) (TransactionDTOOutput, error) {
 	err := p.transactionRepository.Insert(input.ID, input.AccountId, entity.STATUS_REJECTED, errorMessage, input.Amount)
 	if err != nil {
+		log.Printf("Transaction %s is invalid with error: %s", input.ID, err.Error())
 		return TransactionDTOOutput{}, err
 	}
 
@@ -52,17 +53,18 @@ func (p *ProcessTransaction) handleRejectedTransaction(input TransactionDTOInput
 
 	err = p.publish(output, []byte(input.ID))
 	if err != nil {
+		log.Printf("Transaction %s is invalid with error: %s", input.ID, err.Error())
 		return TransactionDTOOutput{}, err
 	}
 
-	log.Printf("Transaction %s is invalid with error: %s", input.ID, err.Error())
-	log.Printf("Failed Transaction %s:", err.Error())
+	log.Printf("Failed Transaction %s with output: %s", input.ID, output)
 	return output, nil
 }
 
 func (p *ProcessTransaction) handleApprovedTransaction(input TransactionDTOInput) (TransactionDTOOutput, error) {
 	err := p.transactionRepository.Insert(input.ID, input.AccountId, entity.STATUS_APPROVED, "", input.Amount)
 	if err != nil {
+		log.Printf("Transaction %s is invalid with error: %s", input.ID, err.Error())
 		return TransactionDTOOutput{}, err
 	}
 
@@ -74,6 +76,7 @@ func (p *ProcessTransaction) handleApprovedTransaction(input TransactionDTOInput
 
 	err = p.publish(output, []byte(input.ID))
 	if err != nil {
+		log.Printf("Transaction %s is invalid with error: %s", input.ID, err.Error())
 		return TransactionDTOOutput{}, err
 	}
 

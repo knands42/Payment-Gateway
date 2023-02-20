@@ -11,11 +11,11 @@ Content-Type: application/json
 x-token: ceo0pwvvg0n
 
 {
-    "amount": 1000.33,
-    "credit_card_number": "4485460940174065",
+    "amount": 100.33,
+    "credit_card_number": "4111111111111111",
     "credit_card_name": "Luiz Carlos",
     "credit_card_expiration_month": 12,
-    "credit_card_expiration_year": 2022,
+    "credit_card_expiration_year": 2026,
     "credit_card_cvv": "123"
 }
 

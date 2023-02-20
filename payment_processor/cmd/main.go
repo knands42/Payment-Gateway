@@ -3,6 +3,9 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/caiofernandes00/payment-gateway/adapter/broker/kafka"
 	"github.com/caiofernandes00/payment-gateway/adapter/factory"
@@ -44,7 +47,31 @@ func main() {
 
 func loadEnv() {
 	config = util.NewConfig()
-	config.LoadEnv()
+	path, err := getRootFile()
+
+	if err != nil {
+		log.Println("No env file provided, using only env variables")
+	}
+
+	config.LoadEnv(path)
+
+	return
+}
+
+func getRootFile() (ex string, err error) {
+	ex, _ = os.Getwd()
+	_, err = os.Stat(filepath.Join(ex, "app.env"))
+
+	if err != nil {
+		ex = filepath.Join(ex, "../")
+		_, err = os.Stat(filepath.Join(ex, "app.env"))
+
+		if err != nil {
+			log.Println("No env file provided, using only env variables")
+		}
+	}
+
+	return
 }
 
 func initializeDb() {

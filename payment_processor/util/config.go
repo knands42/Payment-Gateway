@@ -29,7 +29,11 @@ func NewConfig() *Config {
 	}
 }
 
-func (c *Config) LoadEnv() {
+func (c *Config) LoadEnv(path string) {
+	viper.AddConfigPath(path)
+	viper.SetConfigName("app")
+	viper.SetConfigType("env")
+
 	viper.AutomaticEnv()
 
 	err := viper.Unmarshal(&c)

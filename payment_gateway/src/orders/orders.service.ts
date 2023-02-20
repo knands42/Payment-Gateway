@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Producer } from '@nestjs/microservices/external/kafka.interface';
 import { InjectModel } from '@nestjs/sequelize/dist';
 import { EmptyResultError } from 'sequelize';
@@ -15,13 +16,26 @@ export class OrdersService {
     private readonly accountStorageService: AccountStorageService,
     @Inject('KAFKA_PRODUCER')
     private readonly kafkaProducer: Producer,
+    private readonly configService: ConfigService,
   ) {}
 
-  create(createOrderDto: CreateOrderDto) {
-    return this.orderModel.create({
+  async create(createOrderDto: CreateOrderDto) {
+    const order = await this.orderModel.create({
       ...createOrderDto,
-      account_id: this.accountStorageService.account.id,
+      accountId: this.accountStorageService.account.id,
     });
+
+    this.kafkaProducer.send({
+      topic: this.configService.get<string>('KAFKA_TOPIC') ?? 'transactions',
+      messages: [
+        {
+          key: 'transactions',
+          value: JSON.stringify(order),
+        },
+      ],
+    });
+
+    return order;
   }
 
   findAll() {
