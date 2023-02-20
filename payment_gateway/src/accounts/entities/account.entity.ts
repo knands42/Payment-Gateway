@@ -4,12 +4,12 @@ import {
   PrimaryKey,
   DataType,
   Table,
+  CreatedAt,
+  UpdatedAt,
 } from 'sequelize-typescript';
 
 @Table({
   tableName: 'accounts',
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
 })
 export class Account extends Model {
   @PrimaryKey
@@ -24,4 +24,10 @@ export class Account extends Model {
     defaultValue: () => Math.random().toString(36).slice(2),
   })
   token: string;
+
+  @CreatedAt
+  created_at: Date;
+
+  @UpdatedAt
+  updated_at: Date;
 }

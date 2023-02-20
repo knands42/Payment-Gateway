@@ -20,14 +20,14 @@ export class AccountsService {
   }
 
   findOne(idOrToken: string) {
-    return this.accountModel.findOne({
-      where: {
-        [Op.or]: { id: idOrToken, token: idOrToken },
-      },
-      rejectOnEmpty: new EmptyResultError(
-        `Account with ID/Token {idOrToken} not found`,
-      ),
-    });
+    const isUUID = idOrToken.match(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+    return isUUID
+      ? this.accountModel.findByPk(idOrToken)
+      : this.accountModel.findOne({
+          where: { token: idOrToken },
+        });
   }
 
   async update(id: string, updateAccountDto: UpdateAccountDto) {

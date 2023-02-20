@@ -12,6 +12,10 @@ const sequelizeModuleOptions = {
     autoLoadModels: true,
     models: [Order, Account],
     sync: { alter: true },
+    define: {
+      underscored: true,
+      timestamps: true,
+    },
   },
   local: {
     dialect: 'postgres',
@@ -23,6 +27,10 @@ const sequelizeModuleOptions = {
     autoLoadModels: false,
     models: [Order, Account],
     sync: { alter: false, force: false },
+    define: {
+      underscored: true,
+      timestamps: true,
+    },
   },
   default: {
     dialect: 'postgres',
@@ -34,6 +42,10 @@ const sequelizeModuleOptions = {
     autoLoadModels: false,
     models: [Order, Account],
     sync: { alter: false, force: false },
+    define: {
+      underscored: true,
+      timestamps: true,
+    },
   },
 } as { [key in Environments]: SequelizeModuleOptions };
 

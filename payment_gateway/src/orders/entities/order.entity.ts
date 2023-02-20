@@ -1,23 +1,24 @@
 import {
+  BelongsTo,
   Column,
+  CreatedAt,
   DataType,
+  ForeignKey,
   Model,
   PrimaryKey,
   Table,
-  ForeignKey,
-  BelongsTo,
+  UpdatedAt,
 } from 'sequelize-typescript';
 import { Account } from 'src/accounts/entities/account.entity';
 
 export enum OrderStatus {
   Pending = 'pending',
   Approved = 'approved',
+  Rejected = 'rejected',
 }
 
 @Table({
   tableName: 'orders',
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
 })
 export class Order extends Model {
   @PrimaryKey
@@ -37,16 +38,20 @@ export class Order extends Model {
     type: DataType.STRING,
     allowNull: false,
   })
-  credit_card_number: string;
+  creditCardNumber: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  credit_card_name: string;
+  creditCardName: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.ENUM(
+      OrderStatus.Pending,
+      OrderStatus.Approved,
+      OrderStatus.Rejected,
+    ),
     allowNull: false,
     defaultValue: OrderStatus.Pending,
   })
@@ -57,8 +62,14 @@ export class Order extends Model {
     type: DataType.UUIDV4,
     allowNull: false,
   })
-  account_id: string;
+  accountId: string;
 
   @BelongsTo(() => Account)
   account: Account;
+
+  @CreatedAt
+  created_at: Date;
+
+  @UpdatedAt
+  updated_at: Date;
 }

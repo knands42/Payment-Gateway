@@ -1,14 +1,14 @@
 GET http://localhost:3000/api/v1/orders
-x-token: nwashx2nnej
+x-token: ceo0pwvvg0n
 
 ###
-GET http://localhost:3000/api/v1/orders/75efb3c2-7ac3-4ebf-b8dd-fa89e758c6d7
-x-token: uwjv5dqrlpo
+GET http://localhost:3000/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+x-token: ceo0pwvvg0n
 
 ###
 POST http://localhost:3000/api/v1/orders
 Content-Type: application/json
-x-token: nwashx2nnej
+x-token: ceo0pwvvg0n
 
 {
     "amount": 1000.33,
@@ -20,7 +20,7 @@ x-token: nwashx2nnej
 }
 
 ###
-PATCH http://localhost:3000/api/v1/orders/64704072-7959-482e-b658-d008612f27e9
+PATCH http://localhost:3000/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
 Content-Type: application/json
 
 {
@@ -29,4 +29,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/v1/orders/64704072-7959-482e-b658-d008612f27e9
+DELETE http://localhost:3000/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
