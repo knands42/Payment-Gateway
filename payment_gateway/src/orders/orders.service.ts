@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Producer } from '@nestjs/microservices/external/kafka.interface';
 import { InjectModel } from '@nestjs/sequelize/dist';
 import { EmptyResultError } from 'sequelize';
 import { AccountStorageService } from 'src/accounts/account-storage/account-storage.service';
@@ -12,6 +13,8 @@ export class OrdersService {
     @InjectModel(Order)
     private readonly orderModel: typeof Order,
     private readonly accountStorageService: AccountStorageService,
+    @Inject('KAFKA_PRODUCER')
+    private readonly kafkaProducer: Producer,
   ) {}
 
   create(createOrderDto: CreateOrderDto) {

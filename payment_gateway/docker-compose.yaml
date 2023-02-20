@@ -9,12 +9,10 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - .:/home/node/app
+      - .:/app
     depends_on: 
       postgres:
         condition: service_started
-    networks:
-      - Payment-Gateway-network
     environment:
       - NODE_ENV=local
       - PORT=3000
@@ -23,13 +21,21 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=orders
+      - KAFKA_HOST=host.docker.internal:9094
+      - KAFKA_CLIENT_ID=payment_gateway
+      - KAFKA_USE_SSL=false
+      - KAFKA_CONSUMER_GROUP_ID=payment_gateway
+    networks:
+      - Payment-Gateway-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 5s
       timeout: 5s
       retries: 3
       start_period: 5s
-
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+  
   postgres:
     image: postgres:14.7-alpine
     container_name: Payment-Gateway-postgres
@@ -37,13 +43,14 @@ services:
       - 5432:5432
     volumes:
       - ./.docker/dbdata:/var/lib/postgresql/data
+    networks:
+      - Payment-Gateway-network
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=orders
-    networks:
-      - Payment-Gateway-network
 
 networks:
   Payment-Gateway-network:
     driver: bridge
+  

@@ -8,15 +8,15 @@ import sequelizeModuleOptions from './config/database/sequelize.config';
 
 @Module({
   imports: [
-    OrdersModule,
-    SequelizeModule.forRoot(
-      sequelizeModuleOptions[process.env.NODE_ENV ?? 'local'],
-    ),
     ConfigModule.forRoot({
       isGlobal: true,
       ignoreEnvFile: true,
     }),
+    SequelizeModule.forRoot(
+      sequelizeModuleOptions[process.env.NODE_ENV ?? 'local'],
+    ),
     AccountsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
 })

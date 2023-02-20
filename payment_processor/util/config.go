@@ -21,7 +21,7 @@ func NewConfig() *Config {
 	return &Config{
 		DriverName:            "sqlite3",
 		DataSourceName:        "transaction.db",
-		KafkaBootstrapServers: "localhost:9092",
+		KafkaBootstrapServers: "host.docker.internal:9094",
 		KafkaProducerTopic:    "transactions_result",
 		KafkaConsumerTopic:    "transactions",
 		KafkaConsumerClientId: "goapp",

@@ -1,13 +1,32 @@
 import { Module } from '@nestjs/common';
-import { OrdersService } from './orders.service';
-import { OrdersController } from './orders.controller';
+import { ClientsModule } from '@nestjs/microservices';
+import { ClientKafka } from '@nestjs/microservices/client/client-kafka';
 import { SequelizeModule } from '@nestjs/sequelize/dist';
-import { Order } from './entities/order.entity';
 import { AccountsModule } from 'src/accounts/accounts.module';
+import { kafkaMicroserviceConfig } from './config/kafka.config';
+import { Order } from './entities/order.entity';
+import { OrdersController } from './orders.controller';
+import { OrdersService } from './orders.service';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Order]), AccountsModule],
+  imports: [
+    SequelizeModule.forFeature([Order]),
+    AccountsModule,
+    ClientsModule.registerAsync([
+      {
+        name: 'KAFKA_SERVICE',
+        useFactory: () => kafkaMicroserviceConfig,
+      },
+    ]),
+  ],
   controllers: [OrdersController],
-  providers: [OrdersService],
+  providers: [
+    OrdersService,
+    {
+      provide: 'KAFKA_PRODUCER',
+      inject: ['KAFKA_SERVICE'],
+      useFactory: async (kafkaService: ClientKafka) => kafkaService.connect(),
+    },
+  ],
 })
 export class OrdersModule {}

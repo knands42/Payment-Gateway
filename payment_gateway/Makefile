@@ -1,4 +1,4 @@
-.PHONY: docker_down docker_up_app docker_up_deps app_run app_build
+.PHONY: docker_down docker_up_app docker_up_deps migration_create migration_up migration_down migration_down_all seeder_create seeder_up seeder_down app_run app_build
 
 NODE_ENV ?= local
 
@@ -6,11 +6,14 @@ NODE_ENV ?= local
 docker_down:
 	docker-compose down
 
-docker_up_app: docker_down app_build
+docker_up_app: docker_down
 	docker-compose up --build --force-recreate
 
-docker_up_deps:
-	docker-compose up --build postgres
+docker_up_deps: docker_down
+	docker-compose up --build postgres -d
+	docker-compose up --build zookeeper -d
+	docker-compose up --build kafka-topics-generator -d
+	docker-compose up --build control-center -d
 	
 ############################### Migration ###############################
 migration_create:

@@ -1,0 +1,7 @@
+FROM golang:1.20 AS builder
+
+WORKDIR /go/src
+RUN apt-get update && apt-get install build-essential librdkafka-dev -y
+COPY . .
+
+CMD ["go", "run", "cmd/main.go"]
