@@ -11,9 +11,6 @@ docker_up_app: docker_down
 
 docker_up_deps: docker_down
 	docker-compose up --build postgres -d
-	docker-compose up --build zookeeper -d
-	docker-compose up --build kafka-topics-generator -d
-	docker-compose up --build control-center -d
 	
 ############################### Migration ###############################
 migration_create:

@@ -5,10 +5,13 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile.local
-    container_name: Payment-Processor-app
+    container_name: payment_processor_app
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=host.docker.internal:9094
+      - KAFKA_BOOTSTRAP_SERVERS=payment_Gateway_kafka:9094
     volumes:
       - .:/go/src
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
+
+
+networks:
+  payment_gateway_network:
+    external: true
