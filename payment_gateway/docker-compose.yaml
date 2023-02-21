@@ -15,6 +15,7 @@ services:
         condition: service_started
     environment:
       - KAFKA_HOST=payment_base_kafka:9094
+      - DB_HOST=payment_gateway_postgres
     networks:
       - payment_gateway_network
 

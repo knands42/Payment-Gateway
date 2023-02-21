@@ -10,6 +10,9 @@ import { Order } from './entities/order.entity';
 
 @Injectable()
 export class OrdersService {
+  private readonly consumerTopic =
+    this.configService.get<string>('KAFKA_TOPIC') ?? 'transactions';
+
   constructor(
     @InjectModel(Order)
     private readonly orderModel: typeof Order,
@@ -26,7 +29,7 @@ export class OrdersService {
     });
 
     this.kafkaProducer.send({
-      topic: this.configService.get<string>('KAFKA_TOPIC') ?? 'transactions',
+      topic: this.consumerTopic,
       messages: [
         {
           key: 'transactions',

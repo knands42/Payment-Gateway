@@ -6,10 +6,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/caiofernandes00/payment-gateway/adapter/broker/kafka"
 	"github.com/caiofernandes00/payment-gateway/adapter/factory"
 	"github.com/caiofernandes00/payment-gateway/adapter/presenter/transaction"
+	repository_adapter "github.com/caiofernandes00/payment-gateway/adapter/repository"
 	"github.com/caiofernandes00/payment-gateway/domain/repository"
 	"github.com/caiofernandes00/payment-gateway/usecase/process_transaction"
 	"github.com/caiofernandes00/payment-gateway/util"
@@ -54,8 +56,6 @@ func loadEnv() {
 	}
 
 	config.LoadEnv(path)
-
-	return
 }
 
 func getRootFile() (ex string, err error) {
@@ -80,6 +80,19 @@ func initializeDb() {
 	if err != nil {
 		panic(err)
 	}
+	initializeMigration(db)
+}
+
+func initializeMigration(db *sql.DB) {
+	ex, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if strings.Contains(ex, "cmd") {
+		ex = filepath.Join(ex, "../")
+	}
+	migrationsDir := os.DirFS(filepath.Join(ex, "/adapter/repository/migrations"))
+	repository_adapter.Up(db, migrationsDir)
 }
 
 func initializeRepo() {
