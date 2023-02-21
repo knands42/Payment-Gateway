@@ -1,10 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Producer } from '@nestjs/microservices/external/kafka.interface';
 import { InjectModel } from '@nestjs/sequelize/dist';
 import { EmptyResultError } from 'sequelize';
 import { AccountStorageService } from 'src/accounts/account-storage/account-storage.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { PublishKafkaDto } from './dto/publish-kafka.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
 
@@ -22,21 +23,14 @@ export class OrdersService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto) {
+  async create(createOrderDto: CreateOrderDto): Promise<Order> {
+    Logger.log(`Creating order ${JSON.stringify(createOrderDto)}`);
     const order = await this.orderModel.create({
       ...createOrderDto,
       accountId: this.accountStorageService.account.id,
     });
 
-    this.kafkaProducer.send({
-      topic: this.consumerTopic,
-      messages: [
-        {
-          key: 'transactions',
-          value: JSON.stringify(order),
-        },
-      ],
-    });
+    void this.publishToKafka(createOrderDto, order);
 
     return order;
   }
@@ -67,5 +61,32 @@ export class OrdersService {
   async remove(id: string) {
     const order = await this.findOne(id);
     return order.destroy();
+  }
+
+  private async publishToKafka(createOrderDto: CreateOrderDto, order: Order) {
+    const objToPublish = new PublishKafkaDto();
+    objToPublish.amount = createOrderDto.amount;
+    objToPublish.creditCardName = createOrderDto.creditCardName;
+    objToPublish.creditCardNumber = createOrderDto.creditCardNumber;
+    objToPublish.creditCardCvv = createOrderDto.creditCardCvv;
+    objToPublish.creditCardExpirationMonth =
+      createOrderDto.creditCardExpirationMonth;
+    objToPublish.creditCardExpirationYear =
+      createOrderDto.creditCardExpirationYear;
+    objToPublish.id = order.id;
+
+    const objToPublishStringify = JSON.stringify(objToPublish);
+
+    Logger.log(`Publishing order to kafka ${objToPublishStringify}`);
+
+    await this.kafkaProducer.send({
+      topic: this.consumerTopic,
+      messages: [
+        {
+          key: 'transactions',
+          value: JSON.stringify(objToPublishStringify),
+        },
+      ],
+    });
   }
 }

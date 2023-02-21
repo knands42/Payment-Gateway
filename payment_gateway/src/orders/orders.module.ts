@@ -3,7 +3,7 @@ import { ClientsModule } from '@nestjs/microservices';
 import { ClientKafka } from '@nestjs/microservices/client/client-kafka';
 import { SequelizeModule } from '@nestjs/sequelize/dist';
 import { AccountsModule } from 'src/accounts/accounts.module';
-import { kafkaMicroserviceConfig } from './config/kafka.config';
+import { kafkaMicroserviceConfig } from '../config/kafka/kafka.config';
 import { Order } from './entities/order.entity';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';

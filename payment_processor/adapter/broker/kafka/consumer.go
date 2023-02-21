@@ -27,7 +27,6 @@ func (c *Consumer) Consume(msgChan chan *ckafka.Message) error {
 	}
 
 	// TODO: Add rebalance callback
-	log.Println("Starting to consume messages...")
 	err = consumer.SubscribeTopics(c.Topics, nil)
 	if err != nil {
 		log.Println("Failed to subscribe to topic: " + err.Error())
@@ -37,7 +36,6 @@ func (c *Consumer) Consume(msgChan chan *ckafka.Message) error {
 	for {
 		log.Println("Waiting for messages...")
 		msg, err := consumer.ReadMessage(-1)
-		log.Println("Message received" + string(msg.Value))
 		if err == nil {
 			msgChan <- msg
 		}

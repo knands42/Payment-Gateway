@@ -41,8 +41,11 @@ func init() {
 func main() {
 	go kafkaConsumer.Consume(kafkaConsumerChan)
 	for msg := range kafkaConsumerChan {
+		log.Println("Message received" + string(msg.Value))
 		var input process_transaction.TransactionDTOInput
 		json.Unmarshal(msg.Value, &input)
+		log.Println("Message unmarshalled")
+		log.Println(input)
 		usecase.Execute(input)
 	}
 }

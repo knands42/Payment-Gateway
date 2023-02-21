@@ -8,10 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import 'colors';
 import { AppModule } from './app.module';
+import { kafkaMicroserviceConfig } from './config/kafka/kafka.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  appSetup(app);
+  await appSetup(app);
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT') ?? 3000;
@@ -22,7 +23,7 @@ async function bootstrap() {
   );
 }
 
-export function appSetup(app: INestApplication) {
+async function appSetup(app: INestApplication) {
   app.enableCors();
   app.setGlobalPrefix('api');
   app.enableVersioning({
@@ -34,6 +35,8 @@ export function appSetup(app: INestApplication) {
       whitelist: true,
     }),
   );
+  app.connectMicroservice(kafkaMicroserviceConfig);
+  await app.startAllMicroservices();
 }
 
 bootstrap();
