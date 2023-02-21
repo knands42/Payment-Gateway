@@ -22,7 +22,7 @@ export class TokenGuard implements CanActivate {
 
     if (token) {
       try {
-        await this.accountStorage.seyBy(token);
+        await this.accountStorage.setBy(token);
         return true;
       } catch (e) {
         console.error(e);

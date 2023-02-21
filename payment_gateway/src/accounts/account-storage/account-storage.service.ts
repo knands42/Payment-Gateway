@@ -12,8 +12,8 @@ export class AccountStorageService {
     return this._account;
   }
 
-  async seyBy(token: string): Promise<void> {
-    Logger.log('AccountStorageService.seyBy()');
+  async setBy(token: string): Promise<void> {
+    Logger.log('AccountStorageService.setBy()');
     this._account = await this.accountsService.findOne(token);
   }
 }

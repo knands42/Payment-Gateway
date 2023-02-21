@@ -4,6 +4,7 @@ import { Producer } from '@nestjs/microservices/external/kafka.interface';
 import { InjectModel } from '@nestjs/sequelize/dist';
 import { EmptyResultError } from 'sequelize';
 import { AccountStorageService } from 'src/accounts/account-storage/account-storage.service';
+import { convertPublisherToSnakeCase, customMemoize } from 'src/utils';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PublishKafkaDto } from './dto/publish-kafka.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -13,6 +14,10 @@ import { Order } from './entities/order.entity';
 export class OrdersService {
   private readonly consumerTopic =
     this.configService.get<string>('KAFKA_TOPIC') ?? 'transactions';
+
+  private static readonly toSnakeConverterMemo = customMemoize(
+    convertPublisherToSnakeCase,
+  );
 
   constructor(
     @InjectModel(Order)
@@ -64,27 +69,21 @@ export class OrdersService {
   }
 
   private async publishToKafka(createOrderDto: CreateOrderDto, order: Order) {
-    const objToPublish = new PublishKafkaDto();
-    objToPublish.amount = createOrderDto.amount;
-    objToPublish.creditCardName = createOrderDto.creditCardName;
-    objToPublish.creditCardNumber = createOrderDto.creditCardNumber;
-    objToPublish.creditCardCvv = createOrderDto.creditCardCvv;
-    objToPublish.creditCardExpirationMonth =
-      createOrderDto.creditCardExpirationMonth;
-    objToPublish.creditCardExpirationYear =
-      createOrderDto.creditCardExpirationYear;
-    objToPublish.id = order.id;
+    const publishKafkaDto = new PublishKafkaDto();
+    Object.assign(publishKafkaDto, createOrderDto, { id: order.id });
 
-    const objToPublishStringify = JSON.stringify(objToPublish);
+    const publishKafkaDtoSnakeCase =
+      OrdersService.toSnakeConverterMemo(publishKafkaDto);
 
-    Logger.log(`Publishing order to kafka ${objToPublishStringify}`);
+    const publishKafkaDtoStringify = JSON.stringify(publishKafkaDtoSnakeCase);
 
+    Logger.log(`Publishing order to kafka ${publishKafkaDtoStringify}`);
     await this.kafkaProducer.send({
       topic: this.consumerTopic,
       messages: [
         {
           key: 'transactions',
-          value: JSON.stringify(objToPublishStringify),
+          value: publishKafkaDtoStringify,
         },
       ],
     });

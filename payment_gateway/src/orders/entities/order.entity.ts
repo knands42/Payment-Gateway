@@ -68,8 +68,8 @@ export class Order extends Model {
   account: Account;
 
   @CreatedAt
-  created_at: Date;
+  createdAt: Date;
 
   @UpdatedAt
-  updated_at: Date;
+  updatedAt: Date;
 }
