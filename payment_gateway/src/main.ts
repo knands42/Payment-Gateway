@@ -15,7 +15,7 @@ async function bootstrap() {
   await appSetup(app);
 
   const configService = app.get(ConfigService);
-  const port = configService.get('PORT') ?? 3000;
+  const port = configService.get('PORT') ?? 3001;
   await app.listen(port);
   Logger.log(
     `Server running on port ${port} in ${process.env.NODE_ENV ?? 'Debug'} mode`

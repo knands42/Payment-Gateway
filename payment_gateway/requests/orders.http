@@ -1,26 +1,26 @@
-GET http://localhost:3000/api/v1/orders
+GET http://localhost:3001/api/v1/orders
 x-token: ceo0pwvvg0n
 
 ### 
-GET http://localhost:3000/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+GET http://localhost:3001/api/v1/orders/2103c9e0-dd97-48d3-8637-e32e1c009824
 x-token: ceo0pwvvg0n
 
 ###
-POST http://localhost:3000/api/v1/orders
+POST http://localhost:3001/api/v1/orders
 Content-Type: application/json
 x-token: ceo0pwvvg0n
 
 {
     "amount": 100.33,
     "credit_card_number": "4111111111111111",
-    "credit_card_name": "Luiz Carlos",
+    "credit_card_name": "Caio Fernandes",
     "credit_card_expiration_month": 12,
     "credit_card_expiration_year": 2026,
     "credit_card_cvv": "123"
 }
 
 ###
-PATCH http://localhost:3000/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+PATCH http://localhost:3001/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
 Content-Type: application/json
 
 {
@@ -29,4 +29,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+DELETE http://localhost:3001/api/v1/orders/11eebc99-9c0b-4ef8-bb6d-6bb9bd380a11

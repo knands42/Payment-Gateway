@@ -1,11 +1,11 @@
-GET http://localhost:3000/api/v1/accounts
+GET http://localhost:3001/api/v1/accounts
 
 ###
-GET http://localhost:3000/api/v1/accounts/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+GET http://localhost:3001/api/v1/accounts/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
 
 
 ###
-POST http://localhost:3000/api/v1/accounts
+POST http://localhost:3001/api/v1/accounts
 Content-Type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/api/v1/accounts/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+PATCH http://localhost:3001/api/v1/accounts/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
 Content-Type: application/json
 
 {

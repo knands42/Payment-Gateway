@@ -52,10 +52,12 @@ export class OrdersController {
   @MessagePattern('transactions_result')
   async consumerUpdateStatus(@Payload() message: KafkaMessage) {
     Logger.log(
-      `OrdersController.consumerUpdateStatus() message received ${message.value}`,
+      `Message received ${JSON.stringify(JSON.parse(JSON.stringify(message)))}`,
     );
-    const { id, status } = message.value as unknown as kafkaResponse;
-    await this.ordersService.update(id, { status });
+    const messageCast = message as unknown as kafkaResponse;
+    await this.ordersService.update(messageCast.id, {
+      status: messageCast.status,
+    });
   }
 }
 

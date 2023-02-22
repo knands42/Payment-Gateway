@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Producer } from '@nestjs/microservices/external/kafka.interface';
 import { InjectModel } from '@nestjs/sequelize/dist';
-import { EmptyResultError } from 'sequelize';
+import { Attributes, EmptyResultError, NonNullFindOptions } from 'sequelize';
 import { AccountStorageService } from 'src/accounts/account-storage/account-storage.service';
 import { convertPublisherToSnakeCase, customMemoize } from 'src/utils';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -49,13 +49,16 @@ export class OrdersService {
   }
 
   findOne(id: string) {
-    return this.orderModel.findOne({
+    const account_id = this.accountStorageService.account?.id;
+    const query: NonNullFindOptions<Attributes<Order>> = {
       where: {
         id,
-        account_id: this.accountStorageService.account.id,
       },
       rejectOnEmpty: new EmptyResultError(`Order with ID ${id} not found`),
-    });
+    };
+    if (account_id) query.where['account_id'] = account_id;
+
+    return this.orderModel.findOne(query);
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
