@@ -36,6 +36,7 @@ coverage
 
 # Databases
 *.db
+!graphql.db
 dbdata
 
 # Others
