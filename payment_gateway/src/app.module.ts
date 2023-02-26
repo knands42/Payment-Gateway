@@ -5,7 +5,10 @@ import { OrdersModule } from './orders/orders.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { ConfigModule } from '@nestjs/config';
 import sequelizeModuleOptions from './config/database/sequelize.config';
-import { SnakeCaseToCamelCaseMiddleware } from './app.middleware';
+import {
+  CamelCasetoSnakeCaseMiddleware,
+  SnakeCaseToCamelCaseMiddleware,
+} from './app.middleware';
 
 @Module({
   imports: [
@@ -24,5 +27,6 @@ import { SnakeCaseToCamelCaseMiddleware } from './app.middleware';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(SnakeCaseToCamelCaseMiddleware).forRoutes('*');
+    consumer.apply(CamelCasetoSnakeCaseMiddleware).forRoutes('*');
   }
 }

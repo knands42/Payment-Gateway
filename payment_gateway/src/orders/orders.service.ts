@@ -4,7 +4,7 @@ import { Producer } from '@nestjs/microservices/external/kafka.interface';
 import { InjectModel } from '@nestjs/sequelize/dist';
 import { Attributes, EmptyResultError, NonNullFindOptions } from 'sequelize';
 import { AccountStorageService } from 'src/accounts/account-storage/account-storage.service';
-import { convertPublisherToSnakeCase, customMemoize } from 'src/utils';
+import { convertPayloadCase, customMemoize } from 'src/utils';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PublishKafkaDto } from './dto/publish-kafka.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -15,9 +15,8 @@ export class OrdersService {
   private readonly consumerTopic =
     this.configService.get<string>('KAFKA_TOPIC') ?? 'transactions';
 
-  private static readonly toSnakeConverterMemo = customMemoize(
-    convertPublisherToSnakeCase,
-  );
+  private static readonly toSnakeConverterMemo =
+    customMemoize(convertPayloadCase);
 
   constructor(
     @InjectModel(Order)

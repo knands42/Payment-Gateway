@@ -2,7 +2,6 @@ type MemoizeFunc<T extends (...args: any[]) => any> = T & {
   cache: Map<string, ReturnType<T>>;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function customMemoize<T extends (...args: any[]) => any>(
   func: T,
 ): MemoizeFunc<T> {
