@@ -18,6 +18,7 @@ type Config struct {
 	KafkaConsumerTopic    string `mapstructure:"KAFKA_CONSUMER_TOPIC"`
 	KafkaConsumerClientId string `mapstructure:"KAFKA_CONSUMER_CLIENT_ID"`
 	KafkaConsumerGroupId  string `mapstructure:"KAFKA_CONSUMER_GROUP_ID"`
+	ExporterEndpoint      string `mapstructure:"EXPORTER_ENDPOINT"`
 }
 
 func NewConfig() *Config {

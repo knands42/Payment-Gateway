@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
+	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
+	"github.com/caiofernandes00/payment-gateway/adapter/trace/exporter"
+	"go.opentelemetry.io/otel/trace"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,6 +21,7 @@ import (
 	"github.com/caiofernandes00/payment-gateway/util"
 	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
 	_ "github.com/mattn/go-sqlite3"
+	"go.opentelemetry.io/otel/baggage"
 )
 
 var (
@@ -28,31 +33,63 @@ var (
 	kafkaProducer     *kafka.Producer
 	kafkaConsumer     *kafka.Consumer
 	kafkaConsumerChan chan *ckafka.Message = make(chan *ckafka.Message)
+	otel              trace.Tracer
 )
 
 func init() {
 	loadEnv()
+	initializeTrace()
 	initializeDb()
 	initializeKafka()
 	initializeRepo()
-	initializeUsecase()
+	initializeUseCase()
 }
 
 func main() {
-	go kafkaConsumer.Consume(kafkaConsumerChan)
+	ctx := baggage.ContextWithoutBaggage(context.Background())
+
+	go func() {
+		tracer_adapter.TraceFn(otel, ctx, "kafka-consumer-listener", func() {
+			err := kafkaConsumer.Consume(kafkaConsumerChan)
+			if err != nil {
+				log.Println("Error to consume kafka message" + err.Error())
+			}
+		})
+	}()
+
 	for msg := range kafkaConsumerChan {
-		log.Println("Message received" + string(msg.Value))
+		var err error
 		var input process_transaction.TransactionDTOInput
-		json.Unmarshal(msg.Value, &input)
-		log.Println("Message unmarshalled")
-		log.Println(input)
-		usecase.Execute(input)
+
+		tracer_adapter.TraceFn(otel, ctx, "kafka-consumer-reader", func() {
+			log.Println("Message received" + string(msg.Value))
+			err = json.Unmarshal(msg.Value, &input)
+		})
+		if err != nil {
+			log.Println("Error to unmarshal message" + err.Error())
+			continue
+		}
+
+		tracer_adapter.TraceFn(otel, ctx, "usecase-process-transaction", func() {
+			log.Println("Message unmarshalled")
+			log.Println(input)
+			_, err = usecase.Execute(input)
+		})
+		if err != nil {
+			log.Println("Error to process transaction" + err.Error())
+			continue
+		}
 	}
 }
 
 func loadEnv() {
 	config = util.NewConfig()
 	config.LoadEnv(config.Profile)
+}
+
+func initializeTrace() {
+	zipkin := exporter.NewZipkinExporter(config.ExporterEndpoint)
+	otel = tracer_adapter.NewOpenTelemetry(zipkin.GetExporter()).GetTracer()
 }
 
 func initializeDb() {
@@ -82,7 +119,7 @@ func initializeRepo() {
 		CreateTransactionRepository()
 }
 
-func initializeUsecase() {
+func initializeUseCase() {
 	usecase = process_transaction.NewProcessTransaction(repo, kafkaProducer, config.KafkaProducerTopic)
 }
 
