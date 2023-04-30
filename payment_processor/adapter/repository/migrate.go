@@ -20,5 +20,8 @@ func Down(db *sql.DB, migrationsDir fs.FS) {
 	if err := migrate.Down(context.Background(), db, migrationsDir); err != nil {
 		panic(err)
 	}
-	db.Close()
+	err := db.Close()
+	if err != nil {
+		panic(err)
+	}
 }

@@ -52,29 +52,7 @@ func main() {
 
 func loadEnv() {
 	config = util.NewConfig()
-	path, err := getRootFile()
-
-	if err != nil {
-		log.Println("No env file provided, using only env variables")
-	}
-
-	config.LoadEnv(path)
-}
-
-func getRootFile() (ex string, err error) {
-	ex, _ = os.Getwd()
-	_, err = os.Stat(filepath.Join(ex, "app.env"))
-
-	if err != nil {
-		ex = filepath.Join(ex, "../")
-		_, err = os.Stat(filepath.Join(ex, "app.env"))
-
-		if err != nil {
-			log.Println("No env file provided, using only env variables")
-		}
-	}
-
-	return
+	config.LoadEnv(config.Profile)
 }
 
 func initializeDb() {

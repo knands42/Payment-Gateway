@@ -2,12 +2,15 @@ package util
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
+	Profile               string `mapstructure:"PROFILE"`
 	DriverName            string `mapstructure:"DRIVER_NAME"`
 	DataSourceName        string `mapstructure:"DATA_SOURCE_NAME"`
 	KafkaBootstrapServers string `mapstructure:"KAFKA_BOOTSTRAP_SERVERS"`
@@ -19,6 +22,7 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
+		Profile:               "local",
 		DriverName:            "sqlite3",
 		DataSourceName:        "transaction.db",
 		KafkaBootstrapServers: "payment_base_kafka:9094",
@@ -29,9 +33,11 @@ func NewConfig() *Config {
 	}
 }
 
-func (c *Config) LoadEnv(path string) {
+func (c *Config) LoadEnv(env string) {
+	path, _ := getRootFile(env)
+
 	viper.AddConfigPath(path)
-	viper.SetConfigName("app")
+	viper.SetConfigName("app." + env)
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
@@ -46,4 +52,25 @@ func (c *Config) LoadEnv(path string) {
 	if err != nil {
 		fmt.Printf("Error unmarshalling config, %s", err)
 	}
+}
+
+func getRootFile(env string) (ex string, err error) {
+	ex, _ = os.Getwd()
+	_, err = os.Stat(filepath.Join(ex, "app."+env+".env"))
+
+	if err != nil {
+		for i := 0; i < 5; i++ {
+			ex = filepath.Join(ex, "../")
+			_, err = os.Stat(filepath.Join(ex, "app."+env+".env"))
+
+			if err == nil {
+				break
+			}
+		}
+		if err != nil {
+			log.Println("No env file provided, using only env variables")
+		}
+	}
+
+	return
 }
