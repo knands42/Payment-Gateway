@@ -1,4 +1,4 @@
-.PHONY: docker_up_app docker_up_deps docker_down migration_create migration_up mockgen app_run app_build kafka_publish
+.PHONY: docker_up_app docker_up_deps docker_down migration_create migration_up mockgen app_run app_build
 
 ############################### DOCKER ###############################
 docker_down:
@@ -37,3 +37,7 @@ app_run:
 
 app_build:
 	go build -o main cmd/main.go
+
+############################### Kafka ###############################
+kafka_publish:
+	docker exec -it payment_base_kafka /bin/bash -c "kafka-console-producer --broker-list localhost:9092 --topic transactions --property parse.key=true --property key.separator=: < ./fixtures/success-transaction.txt"
