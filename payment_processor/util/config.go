@@ -41,13 +41,17 @@ func (c *Config) LoadEnv(env string) {
 	viper.SetConfigName("app." + env)
 	viper.SetConfigType("env")
 
-	viper.AutomaticEnv()
-
 	err := viper.Unmarshal(&c)
+
+	viper.AutomaticEnv()
 
 	v := os.Getenv("KAFKA_BOOTSTRAP_SERVERS")
 	if v != "" {
 		c.KafkaBootstrapServers = v
+	}
+	v = os.Getenv("EXPORTER_ENDPOINT")
+	if v != "" {
+		c.ExporterEndpoint = v
 	}
 
 	if err != nil {

@@ -116,6 +116,14 @@ services:
     networks:
       - payment_gateway_network
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: payment_processor_zipkin
+    ports:
+      - 9411:9411
+    networks:
+      - payment_gateway_network
+      
 networks:
   payment_gateway_network:
     external: true
