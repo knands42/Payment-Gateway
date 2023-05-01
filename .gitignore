@@ -41,3 +41,4 @@ dbdata
 
 # Others
 .TODO
+./fixtures/bash_history

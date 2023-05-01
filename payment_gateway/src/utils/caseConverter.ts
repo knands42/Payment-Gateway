@@ -5,7 +5,7 @@ export enum CaseType {
 
 const fromCamelRegex = /([A-Z])/g;
 const fromSnakeRegex = /([-_][a-z])/g;
-const toCamelRegex = (letter) => letter.toUpperCase();
+const toCamelRegex = (letter) => letter.toUpperCase().replace(/[-_]/g, '');
 const toSnakeRegex = (letter) => `_${letter.toLowerCase()}`;
 
 export function convertPayloadCase(

@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { convertPayloadCase, customMemoize } from './utils';
 import { CaseType } from './utils/caseConverter';
 
@@ -8,11 +8,13 @@ export class SnakeCaseToCamelCaseMiddleware implements NestMiddleware {
 
   use(req: any, _res: any, next: () => void) {
     if (req.body) {
+      Logger.log('Converting payload snake case to camel case');
       req.body = SnakeCaseToCamelCaseMiddleware.toCamelConverterMemo(
         req.body,
         CaseType.SNAKE_CASE,
         CaseType.CAMEL_CASE,
       ) as any;
+      Logger.log("Payload converted -> ", req.body);
     }
     next();
   }
@@ -26,6 +28,7 @@ export class CamelCasetoSnakeCaseMiddleware implements NestMiddleware {
     next();
 
     if (res.locals.response) {
+      Logger.log('Convert camel case to snake case');
       res.locals.response = CamelCasetoSnakeCaseMiddleware.toSnakeConverterMemo(
         res.locals.response,
         CaseType.CAMEL_CASE,

@@ -9,7 +9,7 @@ POST http://localhost:3001/api/v1/accounts
 Content-Type: application/json
 
 {
-    "name": "conta 1"
+    "name": "conta 3"
 }
 
 ###
