@@ -18,10 +18,10 @@ migration_up:
 	migrate -path adapter/repository/migration -database "sqlite3://transaction.db" up
 
 ############################### MOCKGEN ###############################
-REPOSITORY_PATH = domain/repository/*.go
-REPOSITORY_PATH_MOCKGEN = domain/repository/mock
-ADAPTER_BROKER_PATH = adapter/broker/*.go
-ADAPTER_BROKER_PATH_MOCKGEN = adapter/broker/mock
+REPOSITORY_PATH=domain/repository/*.go
+REPOSITORY_PATH_MOCKGEN=domain/repository/mock
+ADAPTER_BROKER_PATH=adapter/broker/*.go
+ADAPTER_BROKER_PATH_MOCKGEN=adapter/broker/mock
 
 mockgen:
 	@for file in $(REPOSITORY_PATH); do \

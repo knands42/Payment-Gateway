@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 	"os"
 	"testing"
 
@@ -10,11 +11,12 @@ import (
 )
 
 var (
-	migrationDir = os.DirFS("migrations")
-	ctx          = context.Background()
-	otel         = func(ctx context.Context, name string, f func()) {
-		f()
+	migrationDir                             = os.DirFS("migrations")
+	otel         tracer_adapter.TraceClosure = func(ctx context.Context, tracingName string, fn func(context.Context)) context.Context {
+		fn(ctx)
+		return ctx
 	}
+	ctx = context.Background()
 )
 
 func Test_DbInsert(t *testing.T) {

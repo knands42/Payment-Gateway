@@ -5,6 +5,7 @@
 package mock_repository
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,15 +35,15 @@ func (m *MockTransactionRepository) EXPECT() *MockTransactionRepositoryMockRecor
 }
 
 // Insert mocks base method.
-func (m *MockTransactionRepository) Insert(id, account, status, errorMessage string, amount float64) error {
+func (m *MockTransactionRepository) Insert(ctx context.Context, id, account, status, errorMessage string, amount float64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Insert", id, account, status, errorMessage, amount)
+	ret := m.ctrl.Call(m, "Insert", ctx, id, account, status, errorMessage, amount)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Insert indicates an expected call of Insert.
-func (mr *MockTransactionRepositoryMockRecorder) Insert(id, account, status, errorMessage, amount interface{}) *gomock.Call {
+func (mr *MockTransactionRepositoryMockRecorder) Insert(ctx, id, account, status, errorMessage, amount interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockTransactionRepository)(nil).Insert), id, account, status, errorMessage, amount)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockTransactionRepository)(nil).Insert), ctx, id, account, status, errorMessage, amount)
 }

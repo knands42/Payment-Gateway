@@ -1,6 +1,8 @@
 package process_transaction
 
 import (
+	"context"
+	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 	"testing"
 	"time"
 
@@ -12,9 +14,11 @@ import (
 )
 
 var (
-	otel = func(name string, f func()) {
-		f()
+	otel tracer_adapter.TraceClosure = func(ctx context.Context, tracingName string, fn func(context.Context)) context.Context {
+		fn(ctx)
+		return ctx
 	}
+	ctx = context.Background()
 )
 
 func Test_ProcessTransaction_ExecuteApprovedTransaction(t *testing.T) {
@@ -43,15 +47,15 @@ func Test_ProcessTransaction_ExecuteApprovedTransaction(t *testing.T) {
 	presenterMock := mock_broker.NewMockProducerInterface(ctrl)
 	topic := "topic"
 	repositoryMock.EXPECT().
-		Insert(input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
+		Insert(ctx, input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
 		Return(nil)
 
 	presenterMock.EXPECT().
-		Publish(expectedOutput, []byte(input.ID), topic).
+		Publish(ctx, expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
 	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic, otel)
-	output, err := usecase.Execute(input)
+	output, err := usecase.Execute(ctx, input)
 
 	// Assert
 	assert.Nil(t, err)
@@ -84,15 +88,15 @@ func Test_ProcessTransaction_ExecuteInvalidCreditCard(t *testing.T) {
 	presenterMock := mock_broker.NewMockProducerInterface(ctrl)
 	topic := "topic"
 	repositoryMock.EXPECT().
-		Insert(input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
+		Insert(ctx, input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
 		Return(nil)
 	presenterMock.EXPECT().
-		Publish(expectedOutput, []byte(input.ID), topic).
+		Publish(ctx, expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
 	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic, otel)
 
-	output, err := usecase.Execute(input)
+	output, err := usecase.Execute(ctx, input)
 
 	// Assert
 	assert.Nil(t, err)
@@ -125,14 +129,14 @@ func Test_ProcessTransaction_ExecuteRejectedCreditCard(t *testing.T) {
 	presenterMock := mock_broker.NewMockProducerInterface(ctrl)
 	topic := "topic"
 	repositoryMock.EXPECT().
-		Insert(input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
+		Insert(ctx, input.ID, input.AccountId, expectedOutput.Status, expectedOutput.ErrorMessage, input.Amount).
 		Return(nil)
 	presenterMock.EXPECT().
-		Publish(expectedOutput, []byte(input.ID), topic).
+		Publish(ctx, expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
 	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic, otel)
-	output, err := usecase.Execute(input)
+	output, err := usecase.Execute(ctx, input)
 
 	// Assert
 	assert.Nil(t, err)

@@ -44,7 +44,6 @@ func (p *ProcessTransaction) Execute(ctx context.Context, input TransactionDTOIn
 
 		transaction.SetCreditCard(*cc)
 		out, err = p.handleApprovedTransaction(ctx, input)
-
 	})
 
 	return

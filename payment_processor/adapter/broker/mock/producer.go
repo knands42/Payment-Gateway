@@ -5,6 +5,7 @@
 package mock_broker
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,15 +35,15 @@ func (m *MockProducerInterface) EXPECT() *MockProducerInterfaceMockRecorder {
 }
 
 // Publish mocks base method.
-func (m *MockProducerInterface) Publish(msg interface{}, key []byte, topic string) error {
+func (m *MockProducerInterface) Publish(ctx context.Context, msg interface{}, key []byte, topic string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Publish", msg, key, topic)
+	ret := m.ctrl.Call(m, "Publish", ctx, msg, key, topic)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Publish indicates an expected call of Publish.
-func (mr *MockProducerInterfaceMockRecorder) Publish(msg, key, topic interface{}) *gomock.Call {
+func (mr *MockProducerInterfaceMockRecorder) Publish(ctx, msg, key, topic interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Publish", reflect.TypeOf((*MockProducerInterface)(nil).Publish), msg, key, topic)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Publish", reflect.TypeOf((*MockProducerInterface)(nil).Publish), ctx, msg, key, topic)
 }
