@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 	"github.com/caiofernandes00/payment-gateway/adapter/trace/exporter"
-	"go.opentelemetry.io/otel/trace"
 	"log"
 	"os"
 	"path/filepath"
@@ -32,8 +31,9 @@ var (
 	kafkaPresenter    *transaction.TransactionKafkaPresenter
 	kafkaProducer     *kafka.Producer
 	kafkaConsumer     *kafka.Consumer
-	kafkaConsumerChan chan *ckafka.Message = make(chan *ckafka.Message)
-	otel              trace.Tracer
+	kafkaConsumerChan = make(chan *ckafka.Message)
+	otel              tracer_adapter.TraceClosure
+	ctx               = baggage.ContextWithoutBaggage(context.Background())
 )
 
 func init() {
@@ -46,10 +46,9 @@ func init() {
 }
 
 func main() {
-	ctx := baggage.ContextWithoutBaggage(context.Background())
 
 	go func() {
-		tracer_adapter.TraceFn(otel, ctx, "kafka-consumer-listener", func() {
+		ctx = otel(ctx, "kafka-consumer-listener", func(ctx context.Context) {
 			err := kafkaConsumer.Consume(kafkaConsumerChan)
 			if err != nil {
 				log.Println("Error to consume kafka message" + err.Error())
@@ -61,7 +60,7 @@ func main() {
 		var err error
 		var input process_transaction.TransactionDTOInput
 
-		tracer_adapter.TraceFn(otel, ctx, "kafka-consumer-reader", func() {
+		ctx = otel(ctx, "kafka-consumer-reader", func(ctx context.Context) {
 			log.Println("Message received" + string(msg.Value))
 			err = json.Unmarshal(msg.Value, &input)
 		})
@@ -70,10 +69,10 @@ func main() {
 			continue
 		}
 
-		tracer_adapter.TraceFn(otel, ctx, "usecase-process-transaction", func() {
+		ctx = otel(ctx, "usecase-process-transaction", func(ctx context.Context) {
 			log.Println("Message unmarshalled")
 			log.Println(input)
-			_, err = usecase.Execute(input)
+			_, err = usecase.Execute(ctx, input)
 		})
 		if err != nil {
 			log.Println("Error to process transaction" + err.Error())
@@ -89,7 +88,8 @@ func loadEnv() {
 
 func initializeTrace() {
 	zipkin := exporter.NewZipkinExporter(config.ExporterEndpoint)
-	otel = tracer_adapter.NewOpenTelemetry(zipkin.GetExporter()).GetTracer()
+	t := tracer_adapter.NewOpenTelemetry(zipkin.GetExporter())
+	otel = t.TraceFn(t.GetTracer())
 }
 
 func initializeDb() {
@@ -114,13 +114,11 @@ func initializeMigration(db *sql.DB) {
 }
 
 func initializeRepo() {
-	repo = factory.
-		NewRepositoryDatabaseFactory(db).
-		CreateTransactionRepository()
+	repo = factory.NewRepositoryDatabaseFactory(db, otel).CreateTransactionRepository()
 }
 
 func initializeUseCase() {
-	usecase = process_transaction.NewProcessTransaction(repo, kafkaProducer, config.KafkaProducerTopic)
+	usecase = process_transaction.NewProcessTransaction(repo, kafkaProducer, config.KafkaProducerTopic, otel)
 }
 
 func initializeKafka() {
@@ -143,5 +141,5 @@ func initializeKafkaProducer(presenter *transaction.TransactionKafkaPresenter) {
 	configMapProducer := &ckafka.ConfigMap{
 		"bootstrap.servers": config.KafkaBootstrapServers,
 	}
-	kafkaProducer = kafka.NewKafkaProducer(configMapProducer, presenter)
+	kafkaProducer = kafka.NewKafkaProducer(configMapProducer, presenter, otel)
 }

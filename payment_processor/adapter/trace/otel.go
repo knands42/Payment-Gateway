@@ -8,7 +8,10 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
+	"log"
 )
+
+type TraceClosure func(ctx context.Context, tracingName string, fn func(context.Context)) context.Context
 
 type OpenTelemetryExporter interface {
 	GetExporter() sdktrace.SpanExporter
@@ -41,8 +44,20 @@ func (ot *OpenTelemetry) GetTracer() trace.Tracer {
 	return tracer
 }
 
-func TraceFn(otel trace.Tracer, ctx context.Context, tracingName string, fn func()) {
-	_, t := otel.Start(ctx, tracingName)
-	fn()
+func (ot *OpenTelemetry) TraceFn(otel trace.Tracer) TraceClosure {
+	return func(ctx context.Context, tracingName string, fn func(context.Context)) context.Context {
+		return ot.traceFn(otel, ctx, tracingName, fn)
+	}
+}
+
+func (ot *OpenTelemetry) traceFn(otel trace.Tracer, ctx context.Context, tracingName string, fn func(context.Context)) context.Context {
+	childCtx, t := otel.Start(ctx, tracingName)
+	log.Println("Tracing " + tracingName + "...")
+	log.Println("SpanID: " + t.SpanContext().SpanID().String())
+	log.Println("TraceID: " + t.SpanContext().TraceID().String())
+
+	fn(childCtx)
 	t.End()
+
+	return childCtx
 }

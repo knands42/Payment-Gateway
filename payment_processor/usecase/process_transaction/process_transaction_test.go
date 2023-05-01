@@ -11,6 +11,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	otel = func(name string, f func()) {
+		f()
+	}
+)
+
 func Test_ProcessTransaction_ExecuteApprovedTransaction(t *testing.T) {
 	// Arrange
 	input := TransactionDTOInput{
@@ -44,7 +50,7 @@ func Test_ProcessTransaction_ExecuteApprovedTransaction(t *testing.T) {
 		Publish(expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic)
+	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic, otel)
 	output, err := usecase.Execute(input)
 
 	// Assert
@@ -84,7 +90,7 @@ func Test_ProcessTransaction_ExecuteInvalidCreditCard(t *testing.T) {
 		Publish(expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic)
+	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic, otel)
 
 	output, err := usecase.Execute(input)
 
@@ -125,7 +131,7 @@ func Test_ProcessTransaction_ExecuteRejectedCreditCard(t *testing.T) {
 		Publish(expectedOutput, []byte(input.ID), topic).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic)
+	usecase := NewProcessTransaction(repositoryMock, presenterMock, topic, otel)
 	output, err := usecase.Execute(input)
 
 	// Assert
