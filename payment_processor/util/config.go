@@ -19,6 +19,8 @@ type Config struct {
 	KafkaConsumerClientId string `mapstructure:"KAFKA_CONSUMER_CLIENT_ID"`
 	KafkaConsumerGroupId  string `mapstructure:"KAFKA_CONSUMER_GROUP_ID"`
 	ExporterEndpoint      string `mapstructure:"EXPORTER_ENDPOINT"`
+	NewRelicConfigAppName string `mapstructure:"NEW_RELIC_APP_NAME"`
+	NewRelicConfigLicense string `mapstructure:"NEW_RELIC_LICENSE"`
 }
 
 func NewConfig() *Config {
@@ -31,6 +33,8 @@ func NewConfig() *Config {
 		KafkaConsumerTopic:    "transactions",
 		KafkaConsumerClientId: "payment_processor",
 		KafkaConsumerGroupId:  "payment_processor",
+		ExporterEndpoint:      "http://localhost:9411/api/v2/spans",
+		NewRelicConfigAppName: "Payment-Processor",
 	}
 }
 

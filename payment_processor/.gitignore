@@ -22,3 +22,6 @@ go.work
 
 # Databases
 transaction.db
+
+# Other
+.newRelickey

@@ -46,18 +46,14 @@ func (ot *OpenTelemetry) GetTracer() trace.Tracer {
 
 func (ot *OpenTelemetry) TraceFn(otel trace.Tracer) TraceClosure {
 	return func(ctx context.Context, tracingName string, fn func(context.Context)) context.Context {
-		return ot.traceFn(otel, ctx, tracingName, fn)
+		childCtx, t := otel.Start(ctx, tracingName)
+		log.Println("Tracing " + tracingName + "...")
+		log.Println("SpanID: " + t.SpanContext().SpanID().String())
+		log.Println("TraceID: " + t.SpanContext().TraceID().String())
+	
+		fn(childCtx)
+		t.End()
+	
+		return childCtx
 	}
-}
-
-func (ot *OpenTelemetry) traceFn(otel trace.Tracer, ctx context.Context, tracingName string, fn func(context.Context)) context.Context {
-	childCtx, t := otel.Start(ctx, tracingName)
-	log.Println("Tracing " + tracingName + "...")
-	log.Println("SpanID: " + t.SpanContext().SpanID().String())
-	log.Println("TraceID: " + t.SpanContext().TraceID().String())
-
-	fn(childCtx)
-	t.End()
-
-	return childCtx
 }

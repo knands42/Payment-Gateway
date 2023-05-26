@@ -4,12 +4,15 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
-	"github.com/caiofernandes00/payment-gateway/adapter/trace/exporter"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/caiofernandes00/payment-gateway/adapter/apm"
+	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
+	"github.com/caiofernandes00/payment-gateway/adapter/trace/exporter"
+	"github.com/newrelic/go-agent/v3/newrelic"
 
 	"github.com/caiofernandes00/payment-gateway/adapter/broker/kafka"
 	"github.com/caiofernandes00/payment-gateway/adapter/factory"
@@ -33,11 +36,13 @@ var (
 	kafkaConsumer     *kafka.Consumer
 	kafkaConsumerChan = make(chan *ckafka.Message)
 	otel              tracer_adapter.TraceClosure
+	newRelic          *newrelic.Application
 	ctx               = baggage.ContextWithoutBaggage(context.Background())
 )
 
 func init() {
 	loadEnv()
+	initializeNewRelic()
 	initializeTrace()
 	initializeDb()
 	initializeKafka()
@@ -84,6 +89,10 @@ func main() {
 func loadEnv() {
 	config = util.NewConfig()
 	config.LoadEnv(config.Profile)
+}
+
+func initializeNewRelic() {
+	newRelic, _ = apm.NewRelicApm(config)
 }
 
 func initializeTrace() {
