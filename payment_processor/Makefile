@@ -8,7 +8,7 @@ docker_up_app: docker_down
 	docker-compose up --build --force-recreate
 
 docker_up_deps:
-	docker-compose up --build kafka
+	docker-compose up --build postgres
 	
 ############################### MIGRATE ###############################
 migration_create:
@@ -18,18 +18,13 @@ migration_up:
 	migrate -path adapter/repository/migration -database "sqlite3://transaction.db" up
 
 ############################### MOCKGEN ###############################
-REPOSITORY_PATH=domain/repository/*.go
 REPOSITORY_PATH_MOCKGEN=domain/repository/mock
 ADAPTER_BROKER_PATH=adapter/broker/*.go
 ADAPTER_BROKER_PATH_MOCKGEN=adapter/broker/mock
 
 mockgen:
-	@for file in $(REPOSITORY_PATH); do \
-		mockgen -source=$$file -destination=$(REPOSITORY_PATH_MOCKGEN)/`basename $$file` ; \
-	done
-	@for file in $(ADAPTER_BROKER_PATH); do \
-		mockgen -source=$$file -destination=$(ADAPTER_BROKER_PATH_MOCKGEN)/`basename $$file` ; \
-	done
+	mockgen -source=domain/repository/transaction_repository.go -destination=domain/repository/mock/transaction_repository.go ; \
+	mockgen -source=adapter/broker/producer.go -destination=adapter/broker/mock/producer.go ; \
 
 ############################### APP ###############################
 app_run:

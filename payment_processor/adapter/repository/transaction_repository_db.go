@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
-	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 	"time"
+
+	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 )
 
 type TransactionRepositoryDb struct {

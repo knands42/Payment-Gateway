@@ -2,9 +2,10 @@ package process_transaction
 
 import (
 	"context"
-	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 	"testing"
 	"time"
+
+	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 
 	mock_broker "github.com/caiofernandes00/payment-gateway/adapter/broker/mock"
 	"github.com/caiofernandes00/payment-gateway/domain/entity"

@@ -3,9 +3,10 @@ package repository
 import (
 	"context"
 	"database/sql"
-	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 	"os"
 	"testing"
+
+	tracer_adapter "github.com/caiofernandes00/payment-gateway/adapter/trace"
 
 	"github.com/stretchr/testify/assert"
 )

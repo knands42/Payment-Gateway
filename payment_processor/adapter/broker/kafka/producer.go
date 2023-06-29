@@ -53,7 +53,6 @@ func (p *Producer) Publish(ctx context.Context, msg interface{}, key []byte, top
 			Key:            key,
 		}
 
-		// TODO: Add delivery channel
 		err = producer.Produce(message, nil)
 	})
 
