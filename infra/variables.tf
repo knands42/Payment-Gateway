@@ -1,8 +1,3 @@
-variable "prefix" {
-  type    = string
-  default = "gateway"
-}
-
 variable "project_id" {
   type    = string
   default = "localdevelopment-392414"
@@ -15,12 +10,12 @@ variable "project_name" {
 
 variable "region" {
   type    = string
-  default = "us-east1"
+  default = "us-central1"
 }
 
 variable "zone" {
   type    = string
-  default = "us-east1-b"
+  default = "us-central1-a"
 }
 
 variable "user" {
